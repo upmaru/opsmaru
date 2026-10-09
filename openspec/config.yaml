@@ -1,0 +1,19 @@
+schema: spec-driven
+context: |
+  Opsmaru is one headless Phoenix OTP application that also exposes a public
+  library API. Macus embeds it in its existing BEAM; standalone Linux runs
+  the same application as a bundled-ERTS release. Embedded mode is the safe
+  default and must not start Opsmaru's endpoint or a network listener.
+  Each endpoint initially serves one execution host. Incus remains the
+  canonical instance, image, storage, networking and migration backend.
+  Macus owns Apple virtualization, its outer VM lifecycle, private socket
+  relay, host shares, native Incus proxy and macOS packaging. Shared Opsmaru
+  code has no mandatory Macus or Swift dependency and never invokes a host
+  VM CLI. Use maintained TamaMCP contracts and native Incus wire behavior.
+  Host applications supply verified identity, private state and adapters;
+  preserve caller binding through durable tasks and reject ambiguous replay.
+  Initial planning covers compute primitives and independent Linux delivery;
+  environment images, skill bundling, workspace provisioning and scheduling
+  are later changes. Pin dependencies and upstream evidence. Fixture, package,
+  live Linux and Macus hardware acceptance are distinct. Preserve Incus data
+  on failures. Installation is passive; service activation is explicit.
