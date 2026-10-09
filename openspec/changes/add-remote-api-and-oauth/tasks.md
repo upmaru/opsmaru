@@ -18,11 +18,11 @@ Proposal only. The feature branch contains the explicitly requested Phoenix boot
 
 ## 3. Self-hosted OAuth protocol and resource authorization
 
-- [ ] 3.1 Pin a verified TamaOAuth dependency and supported OAuth 2.1 draft/RFC profile; verify code/refresh/PKCE/metadata/client-auth primitives and record the client_credentials parser gap without unsupported grant advertisement.
+- [ ] 3.1 Pin the designated kritama/tama-oauth (`:tama_oauth`) dependency and supported OAuth 2.1 draft/RFC profile; verify code/refresh/PKCE/metadata/client-auth primitives and record the client_credentials parser gap without unsupported grant advertisement.
 - [ ] 3.2 Implement issuer/resource metadata, public JWKS and authentication challenges for MCP and REST; verify exact public identities, supported endpoints/scopes and no private backend address exposure.
 - [ ] 3.3 Implement registered-client authorization-code/S256 request validation and one-use redemption; verify exact redirect/resource/client/consent binding, bad verifier, expired/reused code, mix-up inputs and exclusion of implicit/password grants.
 - [ ] 3.4 Implement refresh exchange, asymmetric access tokens and revocation using transactional state; verify issuer/audience/expiry/scopes/client/subject agreement, rotation races, family replay and active-status checks.
-- [ ] 3.5 Implement the verified confidential service-client grant adapter using maintained authentication/token primitives or an upstream-supported extension; verify private_key_jwt replay, allowed host/project/resource/scopes and absence of caller-selected human impersonation before advertising client_credentials.
+- [ ] 3.5 Coordinate the reusable client_credentials protocol extension in kritama/tama-oauth under a separate authorized change, consume its verified revision and implement only Opsmaru's persisted service-client grant/policy adapter; verify private_key_jwt replay, allowed host/project/resource/scopes and absence of caller-selected human impersonation before advertising client_credentials.
 - [ ] 3.6 Implement admin client registration and explicit optional bounded public registration policy; verify redirect/method/scope limits, rate limits and registration never grants service-client or compute privileges automatically.
 - [ ] 3.7 Document the exact protocol profile and remote-agent/service-client setup; run positive/negative conformance fixtures against registered issuers/resources and verify incomplete grant support remains absent from metadata.
 

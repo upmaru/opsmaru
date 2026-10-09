@@ -71,7 +71,7 @@ Embedded HTTP and MCP handlers SHALL accept host-verified identity through confi
 
 ### Requirement: Verified protocol profile
 
-The advertised OAuth grant and discovery profile SHALL match tested application and dependency support. Internet-Draft targets SHALL identify their revision. Missing protocol-library support MUST remain explicit; helper primitives MUST NOT be advertised as a completed authorization server.
+The advertised profile SHALL match tested application and designated OAuth-library support. Internet-Draft targets SHALL identify their revision. Missing reusable protocol support SHALL be resolved in that library before grant advertisement; Opsmaru MUST NOT duplicate the protocol engine or advertise helpers as a complete server.
 
 #### Scenario: Unsupported grant implementation
 

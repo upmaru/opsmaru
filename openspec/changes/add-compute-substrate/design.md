@@ -67,7 +67,7 @@ Alternatives: merely setting Phoenix `server: false` still starts the endpoint t
 
 ### 3. The host mounts a shared MCP contract and composes its catalogue
 
-Opsmaru depends on maintained TamaMCP rather than implementing JSON-RPC, schemas or task protocols. Shared tools live under `Opsmaru.MCP.Tools.*`; expose a documented compile-time inclusion helper or explicit registration list and immutable names/schemas/scopes. Host composition uses TamaMCP's existing tool DSL, not mutable runtime code loading. Reject duplicate names during compilation.
+The designated MCP dependency is [kritama/tama-mcp](https://github.com/kritama/tama-mcp), OTP application `:tama_mcp` and module namespace `TamaMCP`. Opsmaru consumes its supported JSON-RPC, schemas, transport, tool compilation and task contracts rather than implementing or selecting an alternative protocol engine. Reusable protocol gaps belong in that library; Opsmaru owns compute tools, authorization policy, persistence and host integration. Pin a verified package release or immutable revision, never an editable production sibling path. Shared tools live under `Opsmaru.MCP.Tools.*`; expose a documented compile-time inclusion helper or explicit registration list and immutable names/schemas/scopes. Host composition uses TamaMCP's existing tool DSL, not mutable runtime code loading. Reject duplicate names during compilation.
 
 ```text
 Macus BEAM

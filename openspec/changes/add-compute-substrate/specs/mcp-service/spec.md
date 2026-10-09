@@ -8,7 +8,7 @@ Makes portable compute tools available through a shared MCP contract that standa
 
 ### Requirement: Maintained protocol integration
 
-MCP SHALL use the maintained protocol implementation's supported transport, schemas and task contracts. Unsupported resources, prompts, stdio or protocol versions MUST NOT be advertised. Authentication SHALL precede discovery and dispatch.
+MCP SHALL use the designated maintained MCP library's supported transport, schemas and task contracts; Opsmaru MUST NOT duplicate its protocol engine. Unsupported resources, prompts, stdio or protocol versions MUST NOT be advertised. Authentication SHALL precede discovery and dispatch.
 
 #### Scenario: Unsupported protocol
 

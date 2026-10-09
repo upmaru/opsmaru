@@ -5,7 +5,7 @@ The explicitly requested Phoenix bootstrap completes task 1.1 only; baseline sca
 ## 1. Phoenix project and listener-free embedding
 
 - [x] 1.1 Scaffold one root Phoenix/Cowboy application `:opsmaru` with public `Opsmaru`/`OpsmaruWeb`, optional PostgreSQL/Ecto and HTML/LiveView assets; verify compilation, asset builds, generated baseline tests, absent mailer/dashboard and embedded startup without Endpoint/Repo.
-- [ ] 1.2 Pin Elixir/OTP, development tools and compatible Phoenix/Cowboy/TamaMCP dependencies; commit the lockfile and verify a clean dependency build against the Macus compatibility baseline without sibling path dependencies.
+- [ ] 1.2 Pin Elixir/OTP, development tools and compatible Phoenix/Cowboy dependencies plus the designated kritama/tama-mcp package or immutable revision; commit the lockfile and verify a clean dependency build against the Macus compatibility baseline without sibling path dependencies.
 - [ ] 1.3 Implement explicit embedded/standalone mode configuration and conditional endpoint supervision; verify default startup and PHX_SERVER/PORT cannot start an embedded endpoint process or listener, and invalid standalone configuration binds no port.
 - [ ] 1.4 Implement passive unconfigured startup, configured activation/state validation and host identity/provider readiness gating; verify loading creates no files, unsafe state fails, delayed host startup dispatches no backend work and supervision restarts preserve backend markers.
 - [ ] 1.5 Document library configuration, deployment modes and host startup ownership; verify a small external consumer starts embedded workers while retaining its own endpoint and stopping only the shared service tree.
@@ -40,7 +40,7 @@ The explicitly requested Phoenix bootstrap completes task 1.1 only; baseline sca
 
 ## 5. Shared MCP catalogue and authorization
 
-- [ ] 5.1 Integrate the maintained TamaMCP dependency, cache adapter and documented compile-time shared-tool inclusion; verify applicable conformance fixtures, deterministic catalogue ordering and duplicate-name compile failures.
+- [ ] 5.1 Integrate kritama/tama-mcp (`:tama_mcp`) and its maintained contracts, cache adapter and documented compile-time shared-tool inclusion; verify applicable conformance fixtures, deterministic catalogue ordering and duplicate-name compile failures.
 - [ ] 5.2 Register shared server/instance/image/project/profile/network/storage inspection and passive host-capability tools; verify schemas, configured backend binding and scope-aware discovery in standalone and composed consumer catalogues.
 - [ ] 5.3 Register explicit instance/state/image/snapshot mutations and bounded guest exec; verify native client delegation, required write/exec scopes and denial before backend access without a host-shell tool.
 - [ ] 5.4 Register explicit deletion/destructive restore inputs and destructive scopes; verify missing confirmation, forbidden tools and wrong scopes cannot dispatch backend or host-provider calls.
