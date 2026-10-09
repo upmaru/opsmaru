@@ -2,7 +2,7 @@
 
 ## Context
 
-See [proposal.md](proposal.md) for motivation. `git@github.com:upmaru/opsmaru.git` was empty when checked out; this change is a greenfield planning baseline, not an implementation scaffold.
+See [proposal.md](proposal.md) for motivation. `git@github.com:upmaru/opsmaru.git` was empty when checked out; the initial proposal was a greenfield planning baseline. The subsequent explicit bootstrap request generated a root Phoenix/Cowboy project with PostgreSQL/Ecto and HTML/LiveView assets on feature/phoenix-bootstrap-and-remote-access. Baseline tests and embedded startup pass; shared compute functions remain unimplemented.
 
 The integration reference is Macus's `add-elixir-server` change on `feature/elixir-server`. Its current implementation has a headless Phoenix scaffold, module boundary stubs, pinned Incus reference inventory/differential fixtures and a successful fixture-only Cowboy transport trial. Seven original tasks are checked; shared client methods, MCP tools, production gateway and durable tasks are pending. Macus uses Phoenix 1.8.15, Plug.Cowboy 2.9.0, Cowboy 2.19.0 and TamaMCP 0.1.1 in its current lockfile. These are a verified compatibility baseline for dependency resolution, not a mandate to publish those versions or claim new acceptance.
 
@@ -27,9 +27,9 @@ The reference client is Incus v7.0.1 at `13f3992766142d5087fff2e362cd2e1a75294fe
 
 ## Decisions
 
-### 1. One headless root Phoenix application
+### 1. One root Phoenix application with optional standalone web/persistence
 
-Use one Mix application `:opsmaru`, modules `Opsmaru` and `OpsmaruWeb`, generated headlessly. Pin the toolchain and dependencies in this repo and resolve a lockfile compatible with Macus's tested Phoenix/Cowboy baseline. Use the Cowboy2 adapter. Do not generate HTML, assets, LiveView, Ecto, mailer or dashboard scaffolding.
+Use one Mix application `:opsmaru`, modules `Opsmaru` and `OpsmaruWeb`, with the explicitly requested PostgreSQL/Ecto, HTML/LiveView and assets for standalone authentication. Pin toolchains and lock dependencies compatible with the Macus Phoenix/Cowboy baseline. Keep the Cowboy2 adapter and omit mailer/dashboard/gettext scaffolding. Embedded supervision must not start its own Repo or web endpoint. Identity/OAuth/REST feature implementation belongs to [add-remote-api-and-oauth](../add-remote-api-and-oauth/design.md).
 
 ```text
 lib/opsmaru/
@@ -111,7 +111,7 @@ The native Incus raw proxy and typed client are distinct consumers of transport 
 
 Implement the planned single-node append-only journal and serialized transitions in Opsmaru. Configure an owner-private state location from the host. Persist task plus execution intent before exposing a task handle, then supervise an outbox/runner. Store non-secret serializable execution descriptors; resolve credential and provider references from current host configuration after restart.
 
-Persist native operation IDs as soon as known. Recover by querying them. A possible mutation with no durable identity is uncertain and must not be replayed. Enforce caller-bound polling/input/cancellation, monotonic execution deadlines, bounded output/concurrency and post-commit notifications. Task notifications are lossy; polling is authoritative. Use the maintained task schemas/runner/store contracts and bounded local notification adapter. Do not add Ecto, an external database, Erlang distribution or clustered scheduling for this change.
+Persist native operation IDs as soon as known. Recover by querying them. A possible mutation with no durable identity is uncertain and must not be replayed. Enforce caller-bound polling/input/cancellation, monotonic execution deadlines, bounded output/concurrency and post-commit notifications. Task notifications are lossy; polling is authoritative. Use the maintained task schemas/runner/store contracts and bounded local notification adapter. Keep the task journal independent of standalone identity SQL storage; Ecto's presence must not make database startup mandatory for embedded compute. Do not add Erlang distribution or clustered scheduling for this change.
 
 Macus runtime tool modules remain consumer-owned, but the shared runner may execute them through an explicitly registered tool catalogue and execution adapter. Stable tool identity and host bindings are persisted; recovery rejects missing or incompatible tool descriptors explicitly. The library cannot invoke arbitrary modules named by a request or journal record.
 

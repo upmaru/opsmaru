@@ -1,9 +1,11 @@
 schema: spec-driven
 context: |
-  Opsmaru is one headless Phoenix OTP application that also exposes a public
+  Opsmaru is one Phoenix OTP application that also exposes a public
   library API. Macus embeds it in its existing BEAM; standalone Linux runs
   the same application as a bundled-ERTS release. Embedded mode is the safe
-  default and must not start Opsmaru's endpoint or a network listener.
+  default and must not start Opsmaru's endpoint, repository or a network listener.
+  Standalone authorization can use PostgreSQL/Ecto and a small HTML/LiveView
+  login/consent surface. Database and issuer startup are optional when embedded.
   Each endpoint initially serves one execution host. Incus remains the
   canonical instance, image, storage, networking and migration backend.
   Macus owns Apple virtualization, its outer VM lifecycle, private socket

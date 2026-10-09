@@ -8,12 +8,12 @@ Allows another host application to embed the reusable compute service without ac
 
 ### Requirement: Safe embedded default
 
-The service SHALL default to embedded mode. Embedded startup SHALL expose configured compute services without starting its own endpoint process or network listener. Ambient web-server environment variables MUST NOT override the host's embedded configuration.
+The service SHALL default to embedded mode. Embedded startup SHALL expose configured compute services without starting its own endpoint process, repository or network listener. Ambient web-server environment variables MUST NOT override the host's embedded configuration.
 
 #### Scenario: Dependency startup
 
 - **WHEN** a host starts the dependency in embedded mode while PHX_SERVER and PORT are present
-- **THEN** no dependency-owned endpoint or listener starts and the host retains its existing public endpoint
+- **THEN** no dependency-owned endpoint, repository or listener starts and the host retains its existing public endpoint
 
 ### Requirement: Explicit standalone activation
 
@@ -26,7 +26,7 @@ Standalone mode SHALL require explicit deployment configuration and valid listen
 
 ### Requirement: Host-supplied integration
 
-Embedding SHALL accept the host's backend connection, private state location, identity integration and host capabilities. Shared operations MUST NOT require Macus, Swift, a fixed state directory or a separately running Opsmaru process.
+Embedding SHALL accept the host's backend connection, private state location, identity integration and host capabilities. Shared operations MUST NOT require Macus, Swift, a fixed state directory, an independent database or a separately running Opsmaru process.
 
 #### Scenario: Macus embedding
 

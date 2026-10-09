@@ -1,10 +1,10 @@
 # Tasks
 
-Planning only. All implementation, service activation, publication and real-backend work below requires a later apply request. Macus integration is tracked in its separate `add-elixir-server` change. Sections 1-6 establish the shared foundation; standalone Linux work can follow independently of Macus's runtime/proxy work.
+The explicitly requested Phoenix bootstrap completes task 1.1 only; baseline scaffold tests do not establish shared compute or authentication acceptance. Remaining implementation, service activation and real-backend work requires a later apply request. Macus integration is tracked in its separate `add-elixir-server` change. Sections 1-6 establish the shared foundation; standalone Linux work can follow independently of Macus's runtime/proxy work.
 
 ## 1. Phoenix project and listener-free embedding
 
-- [ ] 1.1 Scaffold one root headless Phoenix/Cowboy application `:opsmaru` with public `Opsmaru`/`OpsmaruWeb` namespaces; verify compilation, generated baseline tests and absence of HTML/assets/LiveView/Ecto scaffolding.
+- [x] 1.1 Scaffold one root Phoenix/Cowboy application `:opsmaru` with public `Opsmaru`/`OpsmaruWeb`, optional PostgreSQL/Ecto and HTML/LiveView assets; verify compilation, asset builds, generated baseline tests, absent mailer/dashboard and embedded startup without Endpoint/Repo.
 - [ ] 1.2 Pin Elixir/OTP, development tools and compatible Phoenix/Cowboy/TamaMCP dependencies; commit the lockfile and verify a clean dependency build against the Macus compatibility baseline without sibling path dependencies.
 - [ ] 1.3 Implement explicit embedded/standalone mode configuration and conditional endpoint supervision; verify default startup and PHX_SERVER/PORT cannot start an embedded endpoint process or listener, and invalid standalone configuration binds no port.
 - [ ] 1.4 Implement passive unconfigured startup, configured activation/state validation and host identity/provider readiness gating; verify loading creates no files, unsafe state fails, delayed host startup dispatches no backend work and supervision restarts preserve backend markers.

@@ -1,0 +1,18 @@
+[tools]
+elixir = "1.19.5-otp-27"
+erlang = "27.3.4.16"
+node = "26.10.0"
+"npm:@fission-ai/openspec" = "1.14.0"
+postgres = "16.9"
+
+[tasks.setup]
+description = "Fetch dependencies, create the configured development database and build assets"
+run = "mix setup"
+
+[tasks."spec:validate"]
+description = "Validate all OpenSpec artifacts strictly"
+run = "openspec validate --all --strict --no-interactive"
+
+[tasks.check]
+description = "Check formatting, compile, build assets and run tests against the selected database"
+run = ["mix format --check-formatted", "mix compile --warnings-as-errors", "mix assets.build", "mix test", "mix run --no-start scripts/check-embedded.exs", "openspec validate --all --strict --no-interactive"]
