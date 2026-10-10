@@ -1,9 +1,15 @@
 defmodule Opsmaru do
   @moduledoc """
-  Opsmaru keeps the contexts that define your domain
-  and business logic.
+  Passive embedded OTP dependency and portable Incus library.
 
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
+  Starting `:opsmaru` in its default `:embedded` deployment mode starts an
+  empty supervisor. It never reads credentials, creates state, starts web/SQL
+  services or opens a backend. A host owns identity, authorization, private
+  state, endpoint and runtime lifecycle. Public calls receive an explicit
+  `Opsmaru.Context` and `Opsmaru.Incus.Connection`; no global remote exists.
+
+  Hosts may explicitly supervise `Opsmaru.ClientSupervisor` to bound concurrent
+  calls. That supervisor starts no work and never recovers/replays mutations.
+  Standalone mode remains an explicitly selected Phoenix scaffold.
   """
 end

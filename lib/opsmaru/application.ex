@@ -6,7 +6,7 @@ defmodule Opsmaru.Application do
   def start(_type, _args) do
     case Application.get_env(:opsmaru, :deployment_mode, :embedded) do
       :embedded ->
-        Supervisor.start_link([OpsmaruWeb.Telemetry],
+        Supervisor.start_link([],
           strategy: :one_for_one,
           name: Opsmaru.Supervisor
         )
