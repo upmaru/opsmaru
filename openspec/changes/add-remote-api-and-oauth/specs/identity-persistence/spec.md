@@ -2,51 +2,60 @@
 
 ## Purpose
 
-Provides durable account and authorization state for standalone deployments while keeping embedded compute independent of a dependency-owned database.
+Persists external subject bindings, local compute grants and browser sessions without creating a local identity provider or requiring a database for embedded compute.
 
 ## ADDED Requirements
 
-### Requirement: Standalone identity database
+### Requirement: Standalone local authorization database
 
-Standalone authorization SHALL persist account, session, registered-client, grant, code, token-family, replay and revocation state transactionally. Embedded mode SHALL not start its own repository or require database credentials unless persistence is explicitly selected by the host.
+Standalone mode SHALL persist exact issuer/subject bindings, principal kind, service-client bindings, local grants, sessions and bounded audit. Provider accounts, passwords, signing keys and authorization-code/refresh families MUST NOT be managed locally. Embedded mode SHALL not require its own repository unless the host explicitly selects it.
 
 #### Scenario: Embedded startup without database
 
-- **WHEN** a host starts the shared dependency without database configuration
-- **THEN** no dependency repository starts and the host can supply its own identity and execution storage
+- **WHEN** a host starts the dependency without database configuration
+- **THEN** it starts no dependency repository and can supply its own identity/persistence adapters
 
-### Requirement: Controlled owner bootstrap
+### Requirement: Controlled local administrator bootstrap
 
-The first owner SHALL be created by an explicit local administrative action. Public account signup and startup-generated default credentials MUST NOT exist. Subsequent accounts and service principals SHALL require authorized administrative provisioning.
+The first local administrator SHALL be bound to an existing exact external issuer/subject by an explicit owner-local action. Provider authentication alone MUST NOT create compute/admin grants. Additional bindings SHALL require authorized administration; no default account or public signup SHALL exist.
 
-#### Scenario: Empty account database
+#### Scenario: Authenticated ungranted user
 
-- **WHEN** an uninitialized standalone installation starts
-- **THEN** it reports that owner setup is required without creating an account or accepting an anonymous compute caller
+- **WHEN** a valid provider user has no local grant
+- **THEN** compute access is denied without automatic account privilege or administrator creation
 
-### Requirement: Atomic credential lifecycle
+### Requirement: Stable ownership and explicit identity migration
 
-Code consumption, refresh rotation, replay rejection and revocation SHALL use atomic transitions and database constraints. Concurrent requests MUST NOT reuse a one-use credential or create multiple successful descendants from one refresh credential.
+Task and grant ownership SHALL use stable issuer/subject identity, independent of email, display name and token refresh. Changing issuer or subject SHALL require explicit audited rebinding to transfer authority; a matching email MUST NOT inherit historical ownership.
 
-#### Scenario: Concurrent refresh
+#### Scenario: Same email at replacement issuer
 
-- **WHEN** two requests concurrently attempt to rotate the same refresh credential
-- **THEN** at most one succeeds and the replay policy records the other attempt without creating another active descendant
+- **WHEN** a user authenticates through a replacement issuer with an old owner's email
+- **THEN** it receives no historical task/grant access without an authorized identity migration
+
+### Requirement: Atomic local permission and session transitions
+
+Local grant changes, subject disable and session revocation SHALL use atomic persisted transitions. Current policy SHALL be enforced on new calls, replayed results and delayed dispatch; stale caches MUST NOT retain local revoked authority.
+
+#### Scenario: Local subject disabled
+
+- **WHEN** an administrator disables a subject whose external token remains active
+- **THEN** its new requests and affected delivery are denied by local policy without deleting accepted tasks
 
 ### Requirement: Secret protection and bounded audit
 
-Passwords and opaque credentials SHALL use appropriate one-way verification storage. Private signing keys SHALL remain outside ordinary database output or be protected with explicit key custody. Audit records SHALL be bounded metadata without raw credentials, operation secrets or arbitrary request bodies.
+Local session identifiers SHALL use one-way verification storage. Provider client credentials SHALL remain in protected configuration; raw API tokens MUST NOT enter the identity/task stores. Audit SHALL contain bounded actor/client/action/resource metadata without passwords, codes, tokens or arbitrary request bodies.
 
-#### Scenario: Authorization audit
+#### Scenario: Authentication audit
 
-- **WHEN** a grant or token lifecycle event is recorded
-- **THEN** its audit identifies actor/client/resource/action without storing the raw code, refresh token, password or bearer token
+- **WHEN** login or compute authorization is audited
+- **THEN** the audit excludes raw bearer tokens, callback codes and provider client secrets
 
 ### Requirement: Explicit migrations and state preservation
 
-Database initialization/migrations SHALL be explicit deployment actions, not dependency startup side effects. Upgrade and rollback SHALL preserve identity and task state and reject incompatible schema versions instead of silently resetting or truncating data.
+Initialization/migrations SHALL be explicit deployment actions. Upgrade and rollback SHALL preserve local policy and task state and reject incompatible schemas without resetting data. Provider configuration changes MUST NOT silently reassign ownership.
 
 #### Scenario: Incompatible rollback
 
-- **WHEN** an older release cannot read the current authorization schema
-- **THEN** startup reports the incompatibility and leaves stored credentials, grants and task data intact
+- **WHEN** an older release cannot read the current local authorization schema
+- **THEN** it reports incompatibility and leaves grants, sessions and task data intact

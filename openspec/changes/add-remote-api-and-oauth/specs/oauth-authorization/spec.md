@@ -2,78 +2,93 @@
 
 ## Purpose
 
-Lets remote agents, users and service clients obtain bounded access to the configured compute host through a self-hosted authorization service and standard discovery contracts.
+Authenticates external human and service callers against a configured OIDC/OAuth provider while enforcing resource-specific compute access and host-owned embedding.
 
 ## ADDED Requirements
 
-### Requirement: Authorization code with PKCE
+### Requirement: Configurable external issuer
 
-The authorization service SHALL require authorization-code flow with S256 PKCE for public clients, registered exact redirect validation and explicit requested resource/scopes. Codes SHALL be short-lived, one-use and bound to client, redirect, user, verifier challenge and resource. Implicit and password grants MUST NOT be supported.
+Standalone deployments SHALL trust one explicitly configured external issuer and approved endpoint/client profile. Discovery SHALL verify exact issuer agreement and use trusted bounded HTTPS transport in production. The service MUST NOT select providers from request/token URLs or fall back to a local issuer.
 
-#### Scenario: Invalid verifier
+#### Scenario: Unknown issuer
 
-- **WHEN** a client redeems a code with a mismatched PKCE verifier
-- **THEN** token issuance fails without granting access to the compute resource
+- **WHEN** a token names an issuer other than the configured provider
+- **THEN** access is denied without fetching that issuer or opening the Incus backend
 
-### Requirement: Resource and scope bound tokens
+#### Scenario: Missing provider configuration
 
-Access tokens SHALL identify a verified issuer, subject, client, expiry and authorized resource/scopes. MCP and REST SHALL validate their canonical resource audience and policy before backend access. A credential for one resource MUST NOT automatically authorize another.
+- **WHEN** standalone activation lacks required issuer/resource configuration
+- **THEN** activation fails without generating local tokens or enabling anonymous compute access
+
+### Requirement: Resource-bound access token validation
+
+MCP and REST SHALL verify external access-token signature, algorithm, issuer, resource audience, times, subject, approved client and scopes before backend access. Audience membership SHALL support the verified provider profile. ID tokens MUST NOT authorize APIs; one resource credential MUST NOT authorize another absent an explicit grant.
 
 #### Scenario: Wrong resource audience
 
-- **WHEN** a caller presents an MCP-bound token to a separately identified REST resource
-- **THEN** authorization rejects it unless that resource was explicitly authorized
+- **WHEN** an MCP-only token is presented to the separately identified REST resource
+- **THEN** access is denied before backend access
 
-### Requirement: Discovery and challenge metadata
+#### Scenario: ID token presented as bearer
 
-The service SHALL publish authorization-server metadata, public signing keys and protected-resource metadata for configured MCP/REST resources. Challenges SHALL identify the resource metadata location without exposing private keys or host backend addresses.
+- **WHEN** a caller presents its browser ID token to a compute API
+- **THEN** the token is rejected as an API credential
 
-#### Scenario: Remote MCP discovery
+### Requirement: Active token and current local policy checks
 
-- **WHEN** a remote agent receives an authentication challenge
-- **THEN** it can discover the configured issuer and supported flow through public metadata before requesting consent
+Protected requests SHALL require active provider introspection and current local authorization. Positive activity caches SHALL expire within 30 seconds and no later than token expiry. A provider failure after that bound SHALL deny access. Affected streams SHALL reauthorize within the same bound; revocation MUST NOT claim to undo accepted backend work.
 
-### Requirement: Refresh rotation and revocation
+#### Scenario: Provider unavailable after cached activity expires
 
-Refresh credentials SHALL rotate with replay detection and family invalidation policy. Revocation and expiry SHALL reject new calls and invalidate affected long-lived delivery within the documented bound. Accepted compute work SHALL not be described as undone merely because its credential was revoked.
+- **WHEN** activity can no longer be established within the configured bound
+- **THEN** new access and stream delivery fail while committed task and Incus data remain preserved
 
-#### Scenario: Refresh credential replay
+#### Scenario: Token revoked
 
-- **WHEN** an already consumed refresh credential is presented again
-- **THEN** the service records replay and applies its family revocation policy without issuing another token
+- **WHEN** the configured provider marks a previously accepted token inactive
+- **THEN** new calls and affected streams reject it within the documented end-to-end bound
 
-### Requirement: Authorized service clients
+### Requirement: Protected resource discovery
 
-Confidential orchestration clients SHALL authenticate with an approved client method and receive only explicitly granted resource/host/project scopes for a service principal. Client-credentials issuance MUST NOT accept a caller-supplied user identity or impersonate a human owner.
+Opsmaru SHALL publish protected-resource metadata and challenges naming its canonical MCP/REST resources and configured external authorization server. Issuer metadata, signing keys, consent, client registration and token issuance SHALL remain provider-owned. Only verified methods and scopes SHALL be advertised.
 
-#### Scenario: Service client supplies user identity
+#### Scenario: Remote MCP authentication challenge
 
-- **WHEN** a service client requests a token while naming another user as owner
-- **THEN** issuance binds the registered service principal or rejects the request without adopting that supplied identity
+- **WHEN** an agent receives an authentication challenge
+- **THEN** it discovers the configured external server through resource metadata without requiring an Opsmaru token endpoint
 
-### Requirement: Registered client trust
+### Requirement: Human and service principal separation
 
-Client registration SHALL enforce approved redirect URIs, supported authentication methods and bounded scope/resource policy. Optional dynamic public registration SHALL be explicit, rate-limited and unable to grant scopes or service-client privileges without owner policy.
+Provider-issued human and service tokens SHALL map to stable exact issuer/subject bindings and approved client identities. Effective permissions SHALL intersect token authority with local host/project/scope grants. Caller-supplied owners and provider usernames MUST NOT manufacture another principal or administrator authority.
 
-#### Scenario: Registration requests elevated scopes
+#### Scenario: Service client names a human owner
 
-- **WHEN** a newly registered public client requests permissions beyond its allowed policy
-- **THEN** registration or authorization rejects those permissions and no elevated grant is created
+- **WHEN** an authorized orchestration service submits a human owner field
+- **THEN** execution remains bound to its registered service principal or fails without impersonation
+
+### Requirement: Provider-independent verified profile
+
+Provider support SHALL be gated by tested claim, introspection, discovery, resource and flow interoperability through the designated protocol libraries. Missing reusable protocol support SHALL be resolved upstream before advertisement; unverified default claims or fabricated identity/grant fields MUST NOT establish compatibility.
+
+#### Scenario: Keycloak claim mismatch
+
+- **WHEN** the pinned library cannot safely validate the configured Keycloak token/introspection profile
+- **THEN** integration remains unsupported until a valid tested profile or verified upstream update resolves it
 
 ### Requirement: Host-owned authentication when embedded
 
-Embedded HTTP and MCP handlers SHALL accept host-verified identity through configured adapters without starting an Opsmaru issuer, browser session service, key generator or database. The same scope and task-owner contract SHALL apply to host-issued credentials.
+Embedded handlers SHALL accept host-verified identity through configured adapters without requiring provider discovery/credentials, Opsmaru browser sessions, an endpoint or database. Shared scope and owner checks SHALL remain enforced.
 
 #### Scenario: Macus authenticates an embedded call
 
 - **WHEN** Macus supplies its verified principal and scopes
-- **THEN** shared handlers use that identity without requiring a second OAuth login or standalone issuer
+- **THEN** shared handlers use that context without another login, issuer or standalone provider process
 
-### Requirement: Verified protocol profile
+### Requirement: Incus authentication boundary
 
-The advertised profile SHALL match tested application and designated OAuth-library support. Internet-Draft targets SHALL identify their revision. Missing reusable protocol support SHALL be resolved in that library before grant advertisement; Opsmaru MUST NOT duplicate the protocol engine or advertise helpers as a complete server.
+Compute access SHALL enforce Opsmaru policy before privileged Incus transport. Presented resource tokens MUST NOT be forwarded as backend credentials. A separately configured Incus OIDC provider SHALL not substitute for authentication of Opsmaru endpoints.
 
-#### Scenario: Unsupported grant implementation
+#### Scenario: Local Incus socket is privileged
 
-- **WHEN** a grant parser or persistence adapter lacks required behavior
-- **THEN** that grant is not advertised or accepted until conformance and lifecycle tests pass
+- **WHEN** an ungranted provider user calls an Opsmaru mutation backed by the local socket
+- **THEN** Opsmaru rejects the operation without relying on socket-level user authorization

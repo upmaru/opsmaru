@@ -67,7 +67,7 @@ The API SHALL supply bounded structured errors, correlation identifiers and oper
 
 ### Requirement: Embedded HTTP composition
 
-An embedding host SHALL be able to mount shared REST handlers and shared MCP tools on its existing endpoint with host identity adapters. Mounting MUST NOT start the dependency's endpoint, repository or standalone issuer.
+An embedding host SHALL be able to mount shared REST handlers and shared MCP tools on its existing endpoint with host identity adapters. Mounting MUST NOT start the dependency's endpoint, repository or standalone provider/login services.
 
 #### Scenario: Macus mounts REST
 

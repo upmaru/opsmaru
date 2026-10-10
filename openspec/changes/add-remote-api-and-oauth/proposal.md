@@ -2,36 +2,37 @@
 
 ## Why
 
-Opsmaru's compute foundation exposes reusable operations through MCP but lacks a REST contract and a self-hosted identity/consent surface for remote callers. A database-backed OAuth service and minimal browser UI will let direct agents and an external opsmaru-tama graph use the same authorized compute operations without embedding orchestration logic in Opsmaru.
+Opsmaru's compute foundation needs a REST contract and remote authentication shared across independently deployed hosts. A configurable external OIDC/OAuth authorization server lets operators use one identity system across clusters while Opsmaru enforces local compute permissions. Keycloak is the first integration test provider; it is not a bundled runtime dependency.
 
 ## What Changes
 
-- Retain one Phoenix/Cowboy application with PostgreSQL/Ecto, HTML/LiveView and assets for standalone accounts and OAuth UI. Embedded Macus mode starts neither the Opsmaru endpoint nor repository by default and continues to use host-supplied identity/persistence.
-- Add a versioned REST operation/task API at `/api/v1` over the same application command boundary used by MCP and direct Elixir calls. Share schemas, scope checks, owner/host bindings, durable task identity, cancellation and uncertain-outcome handling; preserve native Incus as the backend.
-- Add a self-hosted OAuth authorization server with authorization-code plus S256 PKCE, exact registered redirect/resource/scope validation, one-use codes, refresh rotation/replay handling, discovery and revocation. Use [kritama/tama-oauth](https://github.com/kritama/tama-oauth) (`:tama_oauth`, `TamaOAuth`) for protocol primitives with application-owned persistence and policy; do not claim the library already implements a complete server.
-- Add first-owner bootstrap and a minimal browser login, consent, registered-client/grant management and revocation interface. There is no public account signup or workload dashboard in this change.
-- Support separately authorized confidential service clients for REST orchestration, with client credentials bound to service principals and allowed host/project/scopes rather than user impersonation. Resolve reusable grant-protocol gaps in kritama/tama-oauth and consume a verified supported revision before advertising the grant.
-- Publish MCP protected-resource metadata and resource-bound credentials for MCP and REST. Embedded deployments use their host issuer and explicitly mounted shared REST/MCP handlers without starting another issuer, database or endpoint.
-- Add identity storage for users, sessions, clients, grants, code/token families, revocation, replay and audit metadata. The existing host-private task journal remains a separate execution store; PostgreSQL is not made mandatory for embedded compute.
-- Define restart-safe owner-bound request deduplication and task polling suitable for external orchestration. No Tama graph implementation, multi-host scheduler, arbitrary macro language or new development-workspace feature is included.
+- Retain one Phoenix/Cowboy application with optional PostgreSQL/Ecto and HTML/LiveView. Embedded Macus mode starts neither the Opsmaru endpoint nor repository and continues to use host-supplied identity and persistence.
+- Add versioned REST operations/tasks at `/api/v1` over the same domain command boundary as MCP and direct Elixir calls, sharing schemas, permissions, durable identity, cancellation and replay-safe reconciliation.
+- Configure one external issuer per standalone deployment, canonical MCP/REST resource audiences, approved clients, claim mappings and protected-resource discovery. Opsmaru is an OAuth resource server and browser OIDC relying party, not an authorization server.
+- Validate external JWT access tokens and active introspection before compute access, with bounded caches, expiry, provider key rotation, outage denial and local permission checks. Use the designated [kritama/tama-oauth](https://github.com/kritama/tama-oauth) primitives and resolve reusable provider-compatibility gaps there rather than creating a second protocol engine.
+- Support provider-issued human and service identities. Authorization-code/S256 PKCE, refresh, client registration, consent and service-client token issuance belong to the external provider. Opsmaru never forwards user tokens to Incus or exchanges them for its own compute tokens.
+- Replace local passwords, account creation, consent, signing keys and code/refresh-family storage with stable external subject bindings, local host/project/scope grants, browser sessions and bounded audit. Initial local administrator binding is an explicit owner-local action against an exact issuer/subject.
+- Provide a minimal browser sign-in redirect, validated OIDC callback, local logout and local authorization/session administration. No public signup, provider account/client administration or workload dashboard is added.
+- Add reproducible, isolated Keycloak acceptance for browser login, MCP/REST access, service clients, revocation/expiry, key rotation and negative claim/policy cases. Record the exact provider image digest and realm/client profile when implemented.
+- Keep reasoning and orchestration in the external opsmaru-tama graph; development macros, multi-host scheduling and workspace/skills features remain later changes.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `rest-api`: shared versioned command/inspection/task endpoints, result contracts and replay-safe caller integration.
-- `identity-persistence`: optional embedded and explicit standalone persistence, accounts, credential lifecycle and atomic transitions.
-- `oauth-authorization`: self-hosted remote authorization, token/resource/client policy and discovery contracts.
-- `oauth-web-interface`: first-owner setup, secure browser authentication, consent and limited authorization administration.
+- `rest-api`: shared versioned operation/task endpoints and durable caller reconciliation.
+- `identity-persistence`: external subject bindings, local grants, sessions and audit with optional embedded persistence.
+- `oauth-authorization`: configurable external issuer validation, resource metadata and owner-bound human/service authorization.
+- `oauth-web-interface`: external OIDC login and local session/permission administration without local credential issuance.
 
 ### Modified Capabilities
 
-None in the main specification inventory, which is still empty. This change depends on the pending `add-compute-substrate` change. Its project design is reconciled to allow the explicitly requested web/Ecto scaffold while retaining its listener-free embedding and task/Incus contracts; those foundation contracts are not duplicated here.
+None in the empty main specification inventory. Reconcile pending `add-compute-substrate` standalone credential administration with this external-provider contract; preserve its compute, task and embedding boundaries. Existing capability paths are retained so the current complete proposal can be revised in place.
 
 ## Impact
 
-- The current feature branch contains an explicitly requested `mix phx.new` scaffold, mode-aware startup, pinned tools/dependencies and a baseline development page. It does not implement accounts, OAuth, REST/MCP compute tools or real Incus execution.
-- Implementation will add application contexts, migrations, authorization adapters, REST controllers, browser routes/components and security/conformance fixtures. Database transactions own OAuth lifecycle; the shared task store owns execution handoff and REST deduplication, avoiding a split transaction across SQL and the task journal.
-- Reuse the inspected TamaOAuth 0.4.2 protocol surface as a compatibility reference, resolve a real immutable/package dependency before implementation and verify its grant/conformance coverage. OAuth 2.1 is targeted as the pinned Internet-Draft with applicable finalized security/discovery RFCs, not asserted as a finalized standard.
-- The standalone service authenticates remote users itself. Macus retains its own gateway/native proxy trust and can embed shared services without these standalone account/issuer features; mounting the shared REST API in Macus is a consumer integration step.
-- Standalone Linux acceptance covers database migrations, full browser-to-token flows, API/MCP scope equivalence, revocation and process-restart reconciliation. Installed and real-Incus/Macus acceptance remain distinct.
+- The branch currently contains a generated Phoenix scaffold, not implemented authentication, REST/MCP compute or live Incus execution. This revision changes planning and explanatory documentation only.
+- Implementation adds provider configuration/discovery, resource verification, claim normalization, local policy migrations, browser callback/session handlers and Keycloak fixtures. SQL owns local policy/session transitions; the host-private task journal owns execution intents and deduplication.
+- Retain [kritama/tama-mcp](https://github.com/kritama/tama-mcp) and TamaOAuth as the protocol targets. The inspected TamaOAuth 0.4.2 protected-resource profile is stricter than generic Keycloak defaults; compatibility must be demonstrated or resolved upstream before support claims. Opsmaru no longer needs an authorization-server client_credentials parser or token-issuance implementation.
+- Standalone production requires a configured external provider; there is no automatic local issuer fallback. Macus retains its existing gateway/native proxy trust and embeds shared compute without adopting this standalone login surface.
+- Separate protocol fixtures, isolated Keycloak integration, installed Linux/remote access and real Incus/Macus acceptance. Publishing a plan does not complete any live authentication or hardware gate.

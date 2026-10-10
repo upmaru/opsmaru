@@ -2,7 +2,7 @@
 
 Opsmaru is a Phoenix application intended to provide portable Incus compute operations through an embedded Elixir API, MCP and REST. Macus embeds the same application; Linux hosts can run its standalone Phoenix service.
 
-This branch contains a Phoenix 1.8 scaffold with PostgreSQL/Ecto, HTML/LiveView assets and Cowboy. Accounts, OAuth, REST operations, MCP tools and Incus execution are planning artifacts, not implemented features. The generated development page is not an authenticated compute console.
+This branch contains a Phoenix 1.8 scaffold with PostgreSQL/Ecto, HTML/LiveView assets and Cowboy. External OIDC login/token validation, local permissions, REST operations, MCP tools and Incus execution are planning artifacts, not implemented features. The generated development page is not an authenticated compute console.
 
 ## Development
 
@@ -20,7 +20,7 @@ mise run setup
 OPSMARU_MODE=standalone mise exec -- mix phx.server
 ```
 
-The development page is served on loopback at port 4000. Assets use the generated Tailwind/esbuild setup. OAuth login and consent are proposed next; no production user accounts or OAuth keys are initialized by setup.
+The development page is served on loopback at port 4000. Assets use the generated Tailwind/esbuild setup. External OIDC sign-in and provider-issued API tokens are proposed next, with Keycloak as the first test provider. Setup does not provision provider accounts, local administrator grants or OAuth keys.
 
 ```sh
 mise run check
@@ -38,7 +38,7 @@ Standalone mode is selected explicitly with `OPSMARU_MODE=standalone`. Productio
 ## Planning
 
 - [Compute foundation](openspec/changes/add-compute-substrate/proposal.md): shared Incus client, composable MCP tools, host contracts and durable execution.
-- [Remote API and OAuth](openspec/changes/add-remote-api-and-oauth/proposal.md): shared REST commands, persistence, login/consent and remote authorization.
+- [Remote API and OAuth](openspec/changes/add-remote-api-and-oauth/proposal.md): shared REST commands, configurable external OIDC/OAuth, local permission/session persistence and Keycloak acceptance.
 
 Implementation follows validated OpenSpec changes. A validated proposal is not completed runtime or security acceptance.
 

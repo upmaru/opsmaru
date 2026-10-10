@@ -2,51 +2,56 @@
 
 ## Purpose
 
-Provides a small standalone browser surface for login, deliberate OAuth consent and authorization administration without making a GUI mandatory for embedded compute.
+Provides external-provider browser sign-in and limited local authorization/session administration while leaving account authentication and OAuth consent at the provider.
 
 ## ADDED Requirements
 
-### Requirement: Secure standalone browser sessions
+### Requirement: External OIDC sign-in
 
-Browser login SHALL establish renewable authenticated sessions with secure production cookies, session rotation, CSRF protection and bounded login attempts. Authentication errors MUST NOT reveal whether an account exists. Sessions SHALL be revocable independently of OAuth client grants.
+Browser login SHALL use authorization code with S256 PKCE, expiring one-use state and nonce against the configured provider. Callback validation SHALL bind issuer, signature, client audience, expiry, nonce and transaction before creating a session. Local passwords, account signup and OAuth consent/token issuance MUST NOT be provided.
 
-#### Scenario: Successful login
+#### Scenario: Unsolicited or replayed callback
 
-- **WHEN** a provisioned user authenticates successfully
-- **THEN** the browser receives a renewed session and cannot retain an attacker-chosen pre-login session identity
+- **WHEN** an OIDC callback has missing, expired or consumed transaction state
+- **THEN** login fails without creating a session or following an untrusted return target
 
-### Requirement: Deliberate consent
+#### Scenario: Validated external login
 
-Consent SHALL display the verified client, requested resource and allowed scopes. A user's decision SHALL apply only to the validated authorization request. Denial MUST NOT create a grant, and invalid redirect requests MUST NOT be followed.
+- **WHEN** an authorized external subject completes a valid callback
+- **THEN** Opsmaru creates a fresh local session for that exact issuer/subject without issuing compute tokens
 
-#### Scenario: User denies consent
+### Requirement: Bounded secure browser sessions
 
-- **WHEN** an authenticated user denies a validated client request
-- **THEN** no grant or access token is issued and only the validated protocol error redirect is used
+Sessions SHALL use secure production cookies, session renewal, CSRF protection, bounded login initiation and origin validation. Their maximum lifetime SHALL be 15 minutes capped at verified login token expiry, with a fresh provider round trip for renewal. Logout/local revocation SHALL remove local session authority; provider-wide logout MUST NOT be implied.
 
-### Requirement: Limited authorization administration
+#### Scenario: Local logout
 
-Authorized users SHALL inspect and revoke their grants and sessions. Client/account administration SHALL require explicit administrative authority. The initial UI MUST NOT provide arbitrary host commands, public signup or a workload orchestration dashboard.
+- **WHEN** a user logs out of Opsmaru
+- **THEN** its local session fails subsequent authorization without claiming provider tokens or other applications were revoked
 
-#### Scenario: Non-admin client administration
+### Requirement: Local authorization administration
 
-- **WHEN** a non-admin requests client or account administration
-- **THEN** access is denied without changing the registered authorization policy
+Users SHALL inspect their local identity, sessions and permissions. Local grant/subject administration SHALL require explicit administrator authority. Provider accounts, registered clients, consent and credential lifecycle SHALL remain provider-owned; the UI MUST NOT expose arbitrary host commands or orchestration.
 
-### Requirement: Browser and API boundary separation
+#### Scenario: Non-admin changes local grants
 
-Browser session/CSRF handling SHALL remain separate from OAuth token and REST/MCP request parsing. Browser cookies MUST NOT silently replace resource bearer credentials on compute routes. Secrets SHALL be excluded from browser output, URLs and ordinary logs.
+- **WHEN** a non-admin submits a local permission change
+- **THEN** it is denied without altering compute policy
+
+### Requirement: Browser and resource boundary separation
+
+Browser sessions SHALL remain separate from REST/MCP bearer credentials and request parsing. Cookies MUST NOT authorize compute routes implicitly. Callback codes/tokens SHALL not appear in ordinary logs or output; return destinations SHALL be validated and cannot retain authorization material.
 
 #### Scenario: Session cookie on API route
 
-- **WHEN** a browser sends only its login cookie to a bearer-protected compute route
-- **THEN** the API requires its explicit resource authorization instead of inheriting session authority
+- **WHEN** a browser sends only its login cookie to a compute API
+- **THEN** the API requires explicit resource bearer authorization
 
 ### Requirement: Optional embedded web surface
 
-The library's browser surface SHALL not start or be mounted automatically in embedded mode. Hosts SHALL retain the choice to provide their own authentication UI or explicitly mount compatible handlers without another endpoint or repository.
+The browser surface SHALL not start or mount automatically in embedded mode. Hosts SHALL retain their own identity UI and endpoint; reusing provider handlers SHALL require explicit integration without another listener or repository.
 
 #### Scenario: Macus includes the dependency
 
-- **WHEN** Macus starts shared compute without mounting the standalone browser routes
-- **THEN** no Opsmaru login/consent interface, endpoint or database is activated
+- **WHEN** Macus starts shared compute without mounting browser routes
+- **THEN** no Opsmaru login interface, provider connection, endpoint or database is activated

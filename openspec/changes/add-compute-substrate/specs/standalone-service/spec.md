@@ -24,14 +24,19 @@ The service SHALL use operator-selected Incus transport, private state and host 
 - **WHEN** the configured Incus backend is stopped
 - **THEN** authenticated service status remains available and compute requests report backend unavailability without starting another runtime
 
-### Requirement: Owner-local credential administration
+### Requirement: External authentication and local permission administration
 
-Operators SHALL explicitly initialize, issue and revoke scoped bearer credentials using private local administration. Keys, verifiers and task state SHALL be owner-private and excluded from packages, normal output and logs. Ordinary inspection MUST NOT create credentials or activate services.
+Standalone operators SHALL explicitly configure the external issuer/resource/client profile and local subject permissions. Token issuance and revocation SHALL remain external, without local issuer fallback. Provider credentials and task state SHALL be private. Ordinary inspection MUST NOT create grants/credentials or activate services.
 
-#### Scenario: Revoked credential
+#### Scenario: Revoked external credential
 
-- **WHEN** an operator revokes a credential
+- **WHEN** the configured provider marks a credential inactive
 - **THEN** new requests fail and affected streams close within the documented revocation bound
+
+#### Scenario: Provider user lacks local permission
+
+- **WHEN** an authenticated provider subject has no local compute grant
+- **THEN** operations are denied before Incus access without automatically provisioning privilege
 
 ### Requirement: Self-contained platform release
 

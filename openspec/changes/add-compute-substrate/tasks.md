@@ -61,7 +61,7 @@ The explicitly requested Phoenix bootstrap completes task 1.1 only; baseline sca
 
 - [ ] 7.1 Configure the standalone-only Phoenix endpoint for loopback HTTPS and explicit remote identity; verify embedded configuration cannot enable it, invalid TLS binds no listener and native backend access follows authentication.
 - [ ] 7.2 Mount the shared catalogue at /mcp with standalone bearer verification and shared task/cache adapters; verify real HTTP conformance, read/write/exec/delete scope separation and caller-owned task access against fake Unix/TLS backends.
-- [ ] 7.3 Implement owner-local identity initialization and private bearer issuance/revocation; verify unsafe ownership/destinations fail, ordinary inspection creates no credentials and secrets are absent from logs/status/packages.
+- [ ] 7.3 Integrate the external-provider verifier and owner-local external-subject/local-permission administration from add-remote-api-and-oauth; verify no local bearer issuance/fallback, unsafe configuration fails, ordinary inspection creates no credentials and secrets are absent from logs/status/packages. Shared core/embedded acceptance can precede this dependent standalone gate.
 - [ ] 7.4 Provide authenticated service/capability status that distinguishes backend unavailability; verify status remains available while Incus is stopped and no startup action installs Incus or creates an outer VM.
 - [ ] 7.5 Document local/remote setup, service-account Incus permissions and credential rotation; verify isolated configured examples without automatic privilege grants, network/firewall changes or an additional Incus proxy.
 
