@@ -24,7 +24,8 @@ jobs:
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
         with:
           version: 2026.6.11
-      - run: mise trust && mise install
+          install: false
+      - run: mise trust && mise install elixir erlang node npm:@fission-ai/openspec go
       - run: mise exec -- mix local.hex --force && mise exec -- mix local.rebar --force && mise exec -- mix deps.get
       - run: mise run check:library
       - run: mise run spec:validate
