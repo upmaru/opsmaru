@@ -2,65 +2,78 @@
 
 ## Purpose
 
-Allows Linux operators to install and explicitly activate the same compute application as an independent authenticated Phoenix service beside their existing Incus installation.
+Delivers a central authenticated gateway for registered compute targets and an optional listener-free Linux connector without requiring a full server beside each Incus cluster.
 
 ## ADDED Requirements
 
-### Requirement: Explicit authenticated Linux endpoint
+### Requirement: Central authenticated endpoint
 
-Standalone Linux mode SHALL expose MCP at /mcp through explicitly configured HTTPS. Binding SHALL default to loopback; remote exposure SHALL require a configured bind address and matching advertised identity. Missing or invalid authentication SHALL fail before backend access.
+Standalone central mode SHALL expose MCP and shared REST over explicitly configured HTTPS with external user authentication. Default binding SHALL be loopback. An empty registry SHALL be valid; local Incus installation MUST NOT be required. Invalid configuration SHALL not fall back to anonymous or cleartext access.
 
-#### Scenario: Unauthorized request
+#### Scenario: Empty central registry
 
-- **WHEN** an anonymous or invalid-credential caller requests tool discovery or execution
-- **THEN** the server denies access without opening the privileged Incus connection
+- **WHEN** a configured central installation has no targets yet
+- **THEN** it serves authorized registration/status without creating or requiring a local Incus backend
 
-### Requirement: Standalone host configuration
+### Requirement: Direct Incus HTTPS access
 
-The service SHALL use operator-selected Incus transport, private state and host identity. It SHALL distinguish service availability from backend readiness. It MUST NOT install Incus, create an outer VM or modify networking/firewall configuration implicitly.
+Registered reachable targets SHALL use native Incus HTTPS with verified server identity and protected trusted client certificate/private key. Central authorization SHALL precede access. A full Opsmaru deployment or user OIDC token forwarding MUST NOT be required at the target.
 
-#### Scenario: Incus unavailable
+#### Scenario: Direct remote cluster
 
-- **WHEN** the configured Incus backend is stopped
-- **THEN** authenticated service status remains available and compute requests report backend unavailability without starting another runtime
+- **WHEN** an approved reachable cluster is registered
+- **THEN** central shared operations use its authenticated API without installing a connector or Phoenix server there
 
-### Requirement: External authentication and local permission administration
+### Requirement: Optional Linux connector role
 
-Standalone operators SHALL explicitly configure the external issuer/resource/client profile and local subject permissions. Token issuance and revocation SHALL remain external, without local issuer fallback. Provider credentials and task state SHALL be private. Ordinary inspection MUST NOT create grants/credentials or activate services.
+Connector-only Linux SHALL initiate outbound sessions and use one configured local Unix/private HTTPS backend. It SHALL start no inbound listener, MCP endpoint, repository or identity UI and require no central database/issuer credentials. Backend privileges SHALL be explicitly provisioned.
 
-#### Scenario: Revoked external credential
+#### Scenario: Private cluster
 
-- **WHEN** the configured provider marks a credential inactive
-- **THEN** new requests fail and affected streams close within the documented revocation bound
+- **WHEN** a private Linux installation starts its explicitly enrolled connector
+- **THEN** central can dispatch permitted operations through the outbound session without inbound ports or a local full server
 
-#### Scenario: Provider user lacks local permission
+### Requirement: External users and device trust
 
-- **WHEN** an authenticated provider subject has no local compute grant
-- **THEN** operations are denied before Incus access without automatically provisioning privilege
+Central user authentication SHALL use the configured external issuer plus local target permissions. Native backend credentials and enrolled device identity SHALL remain separate. Ordinary inspection MUST NOT issue credentials, enroll devices or activate services.
 
-### Requirement: Self-contained platform release
+#### Scenario: Ungrantable provider identity
 
-Standalone artifacts SHALL include the application and Erlang runtime and identify immutable application, dependency and backend-reference provenance. Supported target architecture and ABI SHALL be explicit. Installed releases MUST NOT require host Elixir/Erlang or a source checkout.
+- **WHEN** a valid provider user lacks target permission
+- **THEN** compute access is denied before opening that target transport
 
-#### Scenario: Clean Linux installation
+### Requirement: Target failure isolation
 
-- **WHEN** a matching supported Linux release is installed on a host without Elixir or Erlang
-- **THEN** the service starts with its bundled runtime after explicit configuration and activation
+The service SHALL distinguish central availability, connector reachability and per-target backend readiness. One unavailable target MUST NOT prevent operations on other permitted targets. Disconnection SHALL preserve accepted work and report uncertainty where appropriate.
 
-### Requirement: Passive installation and explicit service activation
+#### Scenario: One backend stopped
 
-Installation SHALL remain passive. Explicit service activation SHALL run the release in the foreground under the selected service manager. Shutdown, restart, upgrade and uninstall MUST preserve Incus workloads, credentials and task state unless a distinct authorized cleanup is requested.
+- **WHEN** one registered Incus target becomes unavailable
+- **THEN** other targets remain usable and the failed target reports unavailable without automatic runtime creation
+
+### Requirement: Self-contained platform releases
+
+Central and connector-only Linux artifacts SHALL identify immutable application/dependency/reference provenance and include the required Erlang runtime. Advertised architecture/ABI support SHALL be explicit. Installed roles MUST NOT require host Elixir/Erlang or a source checkout.
+
+#### Scenario: Clean connector installation
+
+- **WHEN** a matching connector-only artifact starts on Linux without Elixir/Erlang or PostgreSQL
+- **THEN** its bundled runtime supports outbound execution without activating a central endpoint
+
+### Requirement: Passive installation and state preservation
+
+Installation SHALL remain passive; enrollment and service activation SHALL be explicit. Restart/upgrade/removal SHALL preserve central registry/tasks, local receipts/credentials and Incus data. Installation MUST NOT install Incus, alter firewalls or grant backend access implicitly.
 
 #### Scenario: Package installed
 
-- **WHEN** an operator installs the standalone artifact
-- **THEN** no listener starts, no Incus data changes and credentials are not generated implicitly
+- **WHEN** an operator installs either Linux role
+- **THEN** no listener/session starts and target/credential/workload state is not created implicitly
 
-### Requirement: Independent embedded and Linux acceptance
+### Requirement: Independent acceptance evidence
 
-Checks SHALL separately verify library embedding, standalone fixtures, release contents and real Linux Incus behavior. Macus hardware acceptance SHALL remain consumer-owned. Fixture or package success MUST NOT establish real-host acceptance.
+Checks SHALL distinguish shared-library embedding, multi-target/direct/connector fixtures, installed Linux roles, real remote Incus and Macus hardware acceptance. Fixture/package success MUST NOT establish live-host completion.
 
-#### Scenario: Package smoke test only
+#### Scenario: Fixture-only central success
 
-- **WHEN** a Linux release smoke test passes against a fake backend
-- **THEN** package evidence is recorded while live Linux and Macus hardware acceptance remain incomplete
+- **WHEN** multiple fake targets and connector fixtures pass
+- **THEN** protocol evidence is recorded while installed/live Linux and Macus gates remain incomplete

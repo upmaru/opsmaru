@@ -2,14 +2,18 @@ schema: spec-driven
 context: |
   Opsmaru is one Phoenix OTP application that also exposes a public
   library API. Macus embeds it in its existing BEAM; standalone Linux runs
-  the same application as a bundled-ERTS release. Embedded mode is the safe
+  the central Phoenix gateway as a bundled-ERTS release. Optional Linux
+  connector-only mode runs outbound workers without Endpoint/Repo/listeners. Embedded mode is the safe
   default and must not start Opsmaru's endpoint, repository or a network listener.
   Standalone authentication trusts one configurable external OIDC/OAuth issuer,
   with Keycloak as the first integration test profile. PostgreSQL/Ecto stores
-  local subject permissions/sessions; HTML/LiveView provides external sign-in
+  central target/subject permissions, sessions and tasks/outbox; HTML/LiveView provides external sign-in
   and local administration. Opsmaru does not issue tokens or own passwords/consent.
   Database, browser and provider integration remain optional when embedded.
-  Each endpoint initially serves one execution host. Incus remains the
+  One central MCP/REST endpoint manages authorized registered Incus clusters
+  and Macus targets. Reachable clusters use native HTTPS with dedicated client
+  certificates/private keys; private targets initiate enrolled outbound sessions.
+  User OIDC, connector device identity and backend trust remain distinct. Incus is the
   canonical instance, image, storage, networking and migration backend.
   Macus owns Apple virtualization, its outer VM lifecycle, private socket
   relay, host shares, native Incus proxy and macOS packaging. Shared Opsmaru
@@ -17,7 +21,13 @@ context: |
   VM CLI. Use maintained TamaMCP contracts and native Incus wire behavior.
   Host applications supply verified identity, private state and adapters;
   preserve caller binding through durable tasks and reject ambiguous replay.
-  Initial planning covers compute primitives and independent Linux delivery;
+  Central tasks use SQL transactions; embedded tasks/connector receipts use
+  host-private local journals. Macus remains standalone and enables the connector
+  only through macus connect [url] in its existing Elixir service.
+  First implement add-embedded-incus-foundation for independent library/client
+  adoption by Macus. Tools/tasks, registry/connectors and central APIs follow
+  under add-compute-substrate and add-remote-api-and-oauth.
+  Initial planning covers compute primitives, registration/connectivity and Linux delivery;
   environment images, skill bundling, workspace provisioning and scheduling
   are later changes. Pin dependencies and upstream evidence. Fixture, package,
   live Linux and Macus hardware acceptance are distinct. Preserve Incus data

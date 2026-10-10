@@ -31,7 +31,7 @@ Sessions SHALL use secure production cookies, session renewal, CSRF protection, 
 
 ### Requirement: Local authorization administration
 
-Users SHALL inspect their local identity, sessions and permissions. Local grant/subject administration SHALL require explicit administrator authority. Provider accounts, registered clients, consent and credential lifecycle SHALL remain provider-owned; the UI MUST NOT expose arbitrary host commands or orchestration.
+Users SHALL inspect their identity, sessions and permitted target permissions. Target registration/revocation and grant/subject administration SHALL require explicit administrator authority. Provider accounts, registered clients, consent and credential lifecycle SHALL remain provider-owned; the UI MUST NOT expose arbitrary host commands or orchestration.
 
 #### Scenario: Non-admin changes local grants
 

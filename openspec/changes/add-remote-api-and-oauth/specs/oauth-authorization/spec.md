@@ -8,7 +8,7 @@ Authenticates external human and service callers against a configured OIDC/OAuth
 
 ### Requirement: Configurable external issuer
 
-Standalone deployments SHALL trust one explicitly configured external issuer and approved endpoint/client profile. Discovery SHALL verify exact issuer agreement and use trusted bounded HTTPS transport in production. The service MUST NOT select providers from request/token URLs or fall back to a local issuer.
+The central deployment SHALL trust one explicitly configured external issuer and approved endpoint/client profile. Discovery SHALL verify exact issuer agreement and use trusted bounded HTTPS transport in production. The service MUST NOT select providers from request/token URLs or fall back to a local issuer.
 
 #### Scenario: Unknown issuer
 
@@ -59,7 +59,7 @@ Opsmaru SHALL publish protected-resource metadata and challenges naming its cano
 
 ### Requirement: Human and service principal separation
 
-Provider-issued human and service tokens SHALL map to stable exact issuer/subject bindings and approved client identities. Effective permissions SHALL intersect token authority with local host/project/scope grants. Caller-supplied owners and provider usernames MUST NOT manufacture another principal or administrator authority.
+Provider-issued human and service tokens SHALL map to stable exact issuer/subject bindings and approved client identities. Effective permissions SHALL intersect token authority with central target/project/scope grants. Caller-supplied owners and provider usernames MUST NOT manufacture another principal or administrator authority.
 
 #### Scenario: Service client names a human owner
 
@@ -92,3 +92,12 @@ Compute access SHALL enforce Opsmaru policy before privileged Incus transport. P
 
 - **WHEN** an ungranted provider user calls an Opsmaru mutation backed by the local socket
 - **THEN** Opsmaru rejects the operation without relying on socket-level user authorization
+
+### Requirement: Device enrollment user authorization
+
+Connector enrollment SHALL require an externally authenticated user with enrollment scope and central target-registration permission. Persistent connectors SHALL use enrolled device identity rather than stored user tokens. CLI browser authentication SHALL use a verified provider-supported flow; missing support MUST NOT enable insecure fallback.
+
+#### Scenario: Unsupported CLI provider flow
+
+- **WHEN** the selected provider lacks the advertised CLI enrollment flow
+- **THEN** connect fails with compatibility guidance without password collection or automatic local token issuance

@@ -17,7 +17,7 @@ The REST API SHALL expose registered operations under /api/v1 using the same dom
 
 ### Requirement: Scope-aware operation selection
 
-Only registered operations SHALL be discoverable or invocable. Caller credentials SHALL select authorized scopes and projects on the configured host; request fields MUST NOT forge another owner, remote backend or arbitrary host command.
+Only registered operations SHALL be discoverable or invocable. Caller credentials SHALL select permitted registered targets, scopes and projects; targeted central requests SHALL require explicit target ID; request fields MUST NOT forge another owner, remote backend or arbitrary host command.
 
 #### Scenario: Unknown operation
 
@@ -35,7 +35,7 @@ Long-running REST operations SHALL return an accepted response with a durable ow
 
 ### Requirement: Replay-safe request identity
 
-Mutating submissions SHALL support owner/host/operation-bound idempotency keys persisted atomically with execution intent. Reusing a key with the same normalized input SHALL return the original task/result; different input SHALL fail with conflict. Unknown backend outcomes MUST NOT be retried blindly.
+Mutating submissions SHALL support owner/target/generation/operation-bound idempotency keys persisted atomically with execution intent. Reusing a key with the same normalized input SHALL return the original task/result; different input SHALL fail with conflict. Unknown backend outcomes MUST NOT be retried blindly.
 
 #### Scenario: Duplicate submission
 
@@ -73,3 +73,26 @@ An embedding host SHALL be able to mount shared REST handlers and shared MCP too
 
 - **WHEN** Macus explicitly mounts the shared API with its verified host context
 - **THEN** REST and composed MCP share its gateway identity and existing compute workers without another listener
+
+### Requirement: Central target inventory and selection
+
+One central REST/MCP surface SHALL inspect multiple registered targets with permission-filtered capabilities/readiness. Target IDs SHALL select configured transports; callers MUST NOT supply replacement backend URLs. Results and tasks SHALL identify the selected target and report partial inventory failure explicitly.
+
+#### Scenario: Partial inventory failure
+
+- **WHEN** one permitted target is offline during aggregated inspection
+- **THEN** available targets remain inspectable and the offline target is identified without exposing forbidden targets
+
+### Requirement: Authorized registration and connector enrollment
+
+Target registration, device enrollment and revocation SHALL require explicit user scope and central permission. Enrollment SHALL bind a short-lived one-use challenge to exact service, owner, public device identity and approved capabilities with private-key proof. Ordinary invocation MUST NOT alter registry trust.
+
+#### Scenario: Wrong enrollment key
+
+- **WHEN** enrollment completion presents a key different from its authorized challenge
+- **THEN** no target/device grant is committed and no backend is contacted
+
+#### Scenario: Repeated completion acknowledgement
+
+- **WHEN** the same device queries a successfully committed enrollment receipt after losing its response
+- **THEN** it recovers the existing target/generation without another registration or widened grant

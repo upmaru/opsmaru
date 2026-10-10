@@ -2,39 +2,40 @@
 
 ## Why
 
-Macus's in-progress Elixir server assigns portable Incus operations, MCP tools and durable execution to a macOS application. Opsmaru will provide one reusable compute service that Macus embeds and Linux operators install independently, keeping native Incus behavior consistent across hosts.
+Opsmaru must provide one central MCP/REST gateway for registered Incus clusters and Macus installations while sharing its compute implementation with independently usable Macus. Direct Incus HTTPS and authenticated outbound connectors allow the same operations across reachable and private targets without requiring a full Opsmaru server beside each cluster.
 
 ## What Changes
 
-- Create one Phoenix/Cowboy Mix application, `:opsmaru`, with `Opsmaru`/`OpsmaruWeb` namespaces and a public library API. The same source supports embedding and a standalone Linux release.
-- Include the explicitly requested PostgreSQL/Ecto and HTML/LiveView scaffold for standalone external-identity bindings, local authorization and OIDC sign-in UI; their feature behavior is proposed in [add-remote-api-and-oauth](../add-remote-api-and-oauth/proposal.md).
-- Default to embedded mode: start configured application workers without starting an Opsmaru endpoint, repository or listener. Explicit standalone configuration enables the authenticated Phoenix endpoint; ambient `PHX_SERVER` or `PORT` must not activate an embedded installation.
-- Provide the portable `Opsmaru.Incus` client over local Unix and authenticated HTTPS transports, preserving a pinned official-client coverage inventory, native operation identities and streaming behavior.
-- Provide shared typed Incus MCP tools, catalogue composition and scoped request context through the designated [kritama/tama-mcp](https://github.com/kritama/tama-mcp) dependency (`:tama_mcp`, `TamaMCP`). Macus adds its own runtime tools and mounts one combined `/mcp` endpoint in its existing server.
-- Provide reusable durable task persistence, execution handoff, recovery, cancellation, deadlines and bounded notifications with host-owned private state and credentials.
-- Define host registration and capability contracts for a single execution host per endpoint. macOS runtime and filesystem sharing remain supplied by Macus; Linux uses existing Incus without owning a new outer VM.
-- Provide standalone Linux HTTPS/MCP configuration, configured external-provider authentication and owner-local permission administration, a bundled-ERTS release and explicit systemd installation/activation with separate package and real-Incus acceptance.
-- Treat the first foundation as shared compute primitives. Environment recipes, skills, workspace provisioning, previews, scheduling and multi-host control remain subsequent changes.
+- Depend first on [add-embedded-incus-foundation](../add-embedded-incus-foundation/proposal.md), which independently implements passive embedding and the portable Incus client. This later change adds tools/tasks/central registration/connectors on that verified library.
+- Keep one Phoenix/Cowboy application `:opsmaru`, namespaces `Opsmaru`/`OpsmaruWeb`, reusable as an embedded dependency and delivered as a central Linux service.
+- Replace the earlier one-host-per-endpoint design with an authorized target registry. One central MCP endpoint manages multiple registered standalone Incus servers, clusters and Macus installations using stable target IDs, explicit project/member selection and per-target capabilities.
+- Connect reachable Incus targets directly through native HTTPS with verified server identity and a dedicated trusted client certificate/private key. No full Opsmaru install on the target is required.
+- Provide a versioned authenticated outbound connector for private targets. Macus embeds it in its existing Elixir server; private Linux networks can install a small connector-only release using a configured Incus Unix socket or HTTPS backend, with no Phoenix listener/MCP endpoint or identity database.
+- Default library inclusion to embedded mode with no endpoint or repository. Explicit standalone mode runs the central service; explicit connector-only mode starts outbound workers and private receipt storage without a public listener. Macus remains standalone-capable with its connector disabled until explicit enrollment.
+- Reuse portable Incus clients, bounded operation/stream contracts and the designated [kritama/tama-mcp](https://github.com/kritama/tama-mcp) integration. Target selection is shared schema input; direct transport and connector execution must not duplicate workload behavior.
+- Add durable storage adapters: central PostgreSQL tasks/intents/idempotency/outbox and target registry; host-private local journals for embedded tasks and connector execution receipts. Stable target/registration generation and native operation IDs prevent reconnect replay or accidental reassignment.
+- Retain configurable external OIDC/OAuth for central users, tested with Keycloak under [add-remote-api-and-oauth](../add-remote-api-and-oauth/proposal.md). Backend Incus certificates and enrolled connector device identities are distinct from user tokens.
+- Support remote host capabilities only through known versioned descriptors and explicit target permission. Swift/VZ lifecycle and Mac filesystem sharing remain Macus-owned.
+- Deliver the central and connector-only Linux roles as explicit bundled-ERTS releases with passive systemd installation, separate fixture/package/live acceptance and preserved Incus data.
+- Keep Tama orchestration, scheduling, Terraform jobs, environment images, skills and workspace provisioning as later changes. Multi-target management does not introduce a placement scheduler or workload manager.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `embedded-service`: reusable service startup, host configuration and listener-free embedding into another OTP application.
-- `incus-client`: portable canonical Incus API and stream behavior with independently recorded coverage.
-- `mcp-service`: shared tool contracts, host catalogue composition and caller-bound authorization.
-- `task-execution`: durable task handoff, recovery, bounded execution and authoritative task lookup.
-- `host-capabilities`: explicit execution-host identity, adapters and truthful platform/backend capability reporting.
-- `standalone-service`: independently installed Linux HTTPS/MCP service, external identity configuration, packaging and lifecycle.
+- `mcp-service`: shared catalogue, explicit registered-target selection and caller-bound permissions.
+- `task-execution`: central/local durable stores, remote receipts, reconciliation and bounded execution.
+- `host-capabilities`: registered target identity, enrollment/connector protocol and truthful host features/locality.
+- `standalone-service`: central Linux gateway, direct cluster access, optional connector-only delivery and lifecycle.
 
 ### Modified Capabilities
 
-None; the supplied repository has no existing application or main specifications.
+None in the main inventory. Core embedded-service/incus-client requirements and implementation tasks now belong only to add-embedded-incus-foundation. This later change consumes those contracts; central and optional connector activation are specified under standalone-service/host-capabilities without duplicating the foundational client.
 
 ## Impact
 
-- Implementation will add a root Phoenix project, dependency locks, pinned development tools, conformance/differential fixtures, documentation and Linux release/service packaging to `upmaru/opsmaru`.
-- The integration consumer is Macus's `add-elixir-server` change. Its pending shared client/tool/task implementation moves to this project; Macus retains its Swift runtime adapter, transparent proxy, authentication boundary, CLI and macOS delivery.
-- No Macus source is moved by this proposal. Existing reference provenance and Cowboy fixture evidence are inputs for implementation, with source notices and acceptance boundaries retained.
-- The shared library has no mandatory Macus dependency, fixed macOS state path, Swift runtime endpoint or host lifecycle installation side effect. Production consumers pin an immutable revision or released package; editable path dependencies are development-only.
-- The later explicitly requested Phoenix bootstrap is now present on the feature branch with baseline compilation/assets/tests and embedded-start verification. Shared compute, OAuth and installed/live-backend functionality remain pending; no service activation, credential creation or live workload mutation was performed.
+- The foundational library/client can be completed and pinned by Macus before this central-service change.
+- The Phoenix scaffold exists on the feature branch; shared compute, central registry, connector roles and authentication remain unimplemented. Keep the one completed bootstrap task as evidence, not central-service acceptance.
+- `add-remote-api-and-oauth` supplies central user verification, local target/project grants, browser administration and enrollment REST adapters. Implement the core target/storage/connector contracts here; wire the HTTP/auth surface there without duplicated registries or circular completion requirements.
+- Macus's `add-elixir-server` consumes the library and connector, adds `macus connect [url]`, connection status and disconnect, and preserves its local gateway, native proxy and Swift runtime. Macus does not become a multi-cluster manager.
+- Production consumers still pin an implemented immutable dependency and upstream reference; separate Macus/central/connector evidence. No source migration, service/provider activation, workload mutation, branch merge or hardware acceptance occurs during this planning update.

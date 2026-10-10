@@ -15,15 +15,6 @@ The service SHALL default to embedded mode. Embedded startup SHALL expose config
 - **WHEN** a host starts the dependency in embedded mode while PHX_SERVER and PORT are present
 - **THEN** no dependency-owned endpoint, repository or listener starts and the host retains its existing public endpoint
 
-### Requirement: Explicit standalone activation
-
-Standalone mode SHALL require explicit deployment configuration and valid listener, authentication, state and backend settings. Invalid configuration SHALL fail before listener activation; no fallback to anonymous, cleartext or alternate-port service SHALL occur.
-
-#### Scenario: Invalid standalone configuration
-
-- **WHEN** standalone startup lacks required identity or backend configuration
-- **THEN** startup reports a configuration failure without binding a listener
-
 ### Requirement: Host-supplied integration
 
 Embedding SHALL accept the host's backend connection, private state location, identity integration and host capabilities. Shared operations MUST NOT require Macus, Swift, a fixed state directory, an independent database or a separately running Opsmaru process.
@@ -59,3 +50,12 @@ Production consumers SHALL identify an immutable dependency revision or released
 
 - **WHEN** Macus is built without a sibling Opsmaru checkout
 - **THEN** its pinned dependency resolves reproducibly and its installed package records the Opsmaru source identity
+
+### Requirement: Database-free library verification
+
+Library embedding and client fixture checks SHALL be runnable without database credentials, provider login, an HTTP endpoint or a live backend. Generated web-test database setup MUST NOT be required for the library test profile. Consumer builds SHALL remain reproducible without a sibling checkout.
+
+#### Scenario: Isolated library checks
+
+- **WHEN** library checks run with no PostgreSQL service, DATABASE_URL, OIDC configuration or Macus runtime
+- **THEN** embedding and fake Unix/HTTPS client checks can complete without activating any of those services

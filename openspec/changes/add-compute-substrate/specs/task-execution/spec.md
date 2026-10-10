@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Provides reusable caller-bound durable execution so long-running compute operations can be tracked and recovered consistently inside Macus or an independent Linux service.
+Provides owner-and-target-bound durable execution with central coordination and local receipts so operations survive direct transport, connector and process failures.
 
 ## ADDED Requirements
 
@@ -15,9 +15,9 @@ A returned durable task handle SHALL identify an owner-bound task and accepted e
 - **WHEN** the server exits immediately after returning a durable task handle
 - **THEN** task lookup after restart recovers the task and committed execution intent for the same owner
 
-### Requirement: Host-owned private persistence
+### Requirement: Deployment-selected durable persistence
 
-Task storage SHALL use an explicitly configured host-private location outside installed packages and workload disks. Embedded and standalone instances SHALL isolate task ownership and state. Library inclusion or read-only inspection MUST NOT create storage implicitly.
+Central task, idempotency and dispatch intent SHALL commit atomically in its configured durable store. Embedded tasks and connector receipts SHALL use host-private storage outside packages/workload disks without requiring a repository. Stores SHALL isolate owner, target and generation; inspection/library inclusion MUST NOT create storage implicitly.
 
 #### Scenario: Isolated embedding
 
@@ -68,3 +68,21 @@ Durable task support SHALL be advertised only when store, runner and execution h
 
 - **WHEN** a deployment lacks a complete durable store and runner
 - **THEN** it does not advertise durable execution or return an in-memory worker handle as a durable task
+
+### Requirement: Central task and connector receipt linkage
+
+Central dispatch SHALL persist a stable ID, target/generation and input digest before sending. A connector SHALL commit its execution receipt before acknowledgement. Duplicate matching IDs SHALL return the same receipt; changed inputs SHALL conflict. Reconnect MUST NOT bypass known or uncertain native acceptance.
+
+#### Scenario: Acknowledgement lost
+
+- **WHEN** central loses the connector acknowledgement after durable local acceptance
+- **THEN** it queries the same receipt and native operation rather than creating another dispatch
+
+### Requirement: Target-bound recovery
+
+Tasks SHALL preserve registered target/generation, native operation identity and execution owner across restart. A revoked or replacement target SHALL not receive old work automatically. Cancellation SHALL remain intent until supported backend evidence confirms its effect.
+
+#### Scenario: Target replacement during recovery
+
+- **WHEN** a task's registered generation differs from the current device/backend
+- **THEN** recovery preserves the task and reports reconciliation required without rerouting its mutation

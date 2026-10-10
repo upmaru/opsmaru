@@ -1,8 +1,8 @@
 # Opsmaru
 
-Opsmaru is a Phoenix application intended to provide portable Incus compute operations through an embedded Elixir API, MCP and REST. Macus embeds the same application; Linux hosts can run its standalone Phoenix service.
+Opsmaru is a Phoenix application intended to provide portable Incus compute operations through an embedded Elixir API, MCP and REST. Macus embeds the same application; a central Linux deployment manages registered Incus clusters and Macus targets through one MCP/REST gateway.
 
-This branch contains a Phoenix 1.8 scaffold with PostgreSQL/Ecto, HTML/LiveView assets and Cowboy. External OIDC login/token validation, local permissions, REST operations, MCP tools and Incus execution are planning artifacts, not implemented features. The generated development page is not an authenticated compute console.
+This branch contains a Phoenix 1.8 scaffold with PostgreSQL/Ecto, HTML/LiveView assets and Cowboy. Central target registration, direct HTTPS/outbound connectors, external OIDC, permissions, REST/MCP operations and Incus execution are planning artifacts, not implemented features. The generated development page is not an authenticated compute console.
 
 ## Development
 
@@ -31,16 +31,17 @@ The checks require the configured dedicated test database. `scripts/check-embedd
 
 ## Embedding and deployment
 
-Embedded mode is the default. It starts neither `OpsmaruWeb.Endpoint` nor `Opsmaru.Repo`; loading the dependency does not require database or web secrets. The host application owns authentication, endpoint mounting and optional persistence adapters. Shared compute workers will be implemented by the foundation change.
+Embedded mode is the default. It starts neither `OpsmaruWeb.Endpoint` nor `Opsmaru.Repo`; loading the dependency does not require database or web secrets. The host application owns authentication, endpoint mounting and optional persistence adapters. Shared compute workers and the optional outbound connector will be implemented by the foundation change. Standalone Macus needs no central registration; macus connect [url] is planned in the Macus repository.
 
-Standalone mode is selected explicitly with `OPSMARU_MODE=standalone`. Production configuration requires `DATABASE_URL`, `SECRET_KEY_BASE`, `PHX_HOST`, `OPSMARU_TLS_CERTFILE` and `OPSMARU_TLS_KEYFILE`. It binds HTTPS to loopback by default; `OPSMARU_BIND_IP` and `PORT` select an explicit address/port. The application currently provides only scaffold routes; authentication and compute endpoints require implementation of the plans below.
+Central standalone mode is selected explicitly with `OPSMARU_MODE=standalone`. Production configuration requires `DATABASE_URL`, `SECRET_KEY_BASE`, `PHX_HOST`, `OPSMARU_TLS_CERTFILE` and `OPSMARU_TLS_KEYFILE`. It binds HTTPS to loopback by default; `OPSMARU_BIND_IP` and `PORT` select an explicit address/port. The central role will use PostgreSQL for registry/policy/tasks and will not require a local Incus install. A planned connector-only Linux role uses private receipt/device state with no Endpoint/Repo or inbound listener. The application currently provides only scaffold routes; authentication and compute endpoints require implementation of the plans below.
 
 ## Planning
 
-- [Compute foundation](openspec/changes/add-compute-substrate/proposal.md): shared Incus client, composable MCP tools, host contracts and durable execution.
-- [Remote API and OAuth](openspec/changes/add-remote-api-and-oauth/proposal.md): shared REST commands, configurable external OIDC/OAuth, local permission/session persistence and Keycloak acceptance.
+- [Embedded library and Incus client first](openspec/changes/add-embedded-incus-foundation/proposal.md): independent Macus embedding, Unix/HTTPS client, native API/streams and database-free consumer checks.
+- [Later compute substrate](openspec/changes/add-compute-substrate/proposal.md): shared Incus client/tools, registered targets, direct HTTPS, outbound connectors and central/local durable execution.
+- [Remote API and OAuth](openspec/changes/add-remote-api-and-oauth/proposal.md): shared REST commands, configurable external OIDC/OAuth, central target grants, device enrollment, browser sessions and Keycloak acceptance.
 
-Implementation follows validated OpenSpec changes. A validated proposal is not completed runtime or security acceptance.
+Implement add-embedded-incus-foundation first; it does not depend on central service, MCP/task adapters, OIDC or connectors. Implementation follows validated OpenSpec changes. A validated proposal is not completed runtime or security acceptance.
 
 ## Git Flow
 

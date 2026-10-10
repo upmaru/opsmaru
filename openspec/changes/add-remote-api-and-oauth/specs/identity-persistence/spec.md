@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Persists external subject bindings, local compute grants and browser sessions without creating a local identity provider or requiring a database for embedded compute.
+Persists external subject bindings, central target compute grants and browser sessions without creating a local identity provider or requiring a database for embedded compute.
 
 ## ADDED Requirements
 
 ### Requirement: Standalone local authorization database
 
-Standalone mode SHALL persist exact issuer/subject bindings, principal kind, service-client bindings, local grants, sessions and bounded audit. Provider accounts, passwords, signing keys and authorization-code/refresh families MUST NOT be managed locally. Embedded mode SHALL not require its own repository unless the host explicitly selects it.
+Standalone mode SHALL persist exact issuer/subject bindings, principal kind, service-client bindings, target/project grants, device enrollment/trust metadata, sessions and bounded audit. Provider accounts, user passwords, OAuth signing keys and authorization-code/refresh families MUST NOT be managed locally. Embedded mode SHALL not require its own repository unless the host explicitly selects it.
 
 #### Scenario: Embedded startup without database
 
@@ -59,3 +59,12 @@ Initialization/migrations SHALL be explicit deployment actions. Upgrade and roll
 
 - **WHEN** an older release cannot read the current local authorization schema
 - **THEN** it reports incompatibility and leaves grants, sessions and task data intact
+
+### Requirement: Central device and backend identity separation
+
+Central persistence SHALL bind target generations and enrolled public device identities independently of OIDC users and backend credentials. Device private keys MUST NOT be uploaded to central. Native Incus secrets SHALL use protected credential references. Revocation SHALL preserve historical tasks and receipts.
+
+#### Scenario: Connector revoked
+
+- **WHEN** a target device identity is revoked
+- **THEN** new device dispatch fails and historical target/task bindings remain intact without changing user or native backend credentials
