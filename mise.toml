@@ -15,10 +15,10 @@ description = "Validate all OpenSpec artifacts strictly"
 run = "openspec validate --all --strict --no-interactive"
 
 [tasks.check]
-description = "Check formatting, compile, build assets and run tests against the selected database"
-run = ["mix format --check-formatted", "mix compile --warnings-as-errors", "mix assets.build", "mix test", "mix run --no-start scripts/check-embedded.exs", "openspec validate --all --strict --no-interactive"]
+description = "Check formatting, compile, strict Credo, build assets and run tests against the selected database"
+run = ["mix format --check-formatted", "mix compile --warnings-as-errors", "mix credo --strict", "mix assets.build", "mix test", "mix run --no-start scripts/check-embedded.exs", "openspec validate --all --strict --no-interactive"]
 
 [tasks."check:library"]
 description = "Database-free embedded library fixtures; no Ecto setup or real backend"
 env = { MIX_ENV = "library" }
-run = ["mix compile --warnings-as-errors", "mix test.library"]
+run = ["mix compile --warnings-as-errors", "mix credo --strict", "mix test.library"]

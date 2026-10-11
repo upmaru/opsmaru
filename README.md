@@ -54,3 +54,9 @@ Implement add-embedded-incus-foundation first; it does not depend on central ser
 ## Git Flow
 
 `main` is the released-history branch; its initial commit establishes repository planning only. `develop` is the integration branch. Development uses `feature/*` branches from `develop`. Releases use `release/*`, finishing into both long-lived branches; hotfixes start from `main`. Branch finishing/merging requires explicit authorization. Development work is published on its feature branch. Bootstrap work is published on its feature branch, without a release tag.
+
+Strict Credo is included in `mix precommit`, `mise run check`, and
+`mise run check:library`. It is a development/test dependency and does not start
+with an embedded production consumer. Run the real precommit command safely
+with `python3 scripts/check-isolated.py --precommit`; this also runs canonical
+checks in a fresh test-only PostgreSQL cluster and removes it afterward.

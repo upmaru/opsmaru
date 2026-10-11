@@ -83,8 +83,8 @@ defmodule OpsmaruWeb do
       import OpsmaruWeb.CoreComponents
 
       # Common modules used in templates
-      alias Phoenix.LiveView.JS
       alias OpsmaruWeb.Layouts
+      alias Phoenix.LiveView.JS
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

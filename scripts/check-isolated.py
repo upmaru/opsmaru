@@ -1,9 +1,14 @@
 """Run scaffold checks in a disposable loopback PostgreSQL cluster, never host data."""
+import argparse
 import os
 from pathlib import Path
 import socket
 import subprocess
 import tempfile
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--precommit", action="store_true", help="Also run the actual Mix precommit alias against the isolated database")
+options = parser.parse_args()
 
 root = Path(__file__).resolve().parents[1]
 def run(*args, **kwargs):
@@ -22,5 +27,7 @@ with tempfile.TemporaryDirectory(prefix='opsmaru-pg-') as directory:
     env.update(OPSMARU_DATABASE_HOST='127.0.0.1', OPSMARU_DATABASE_PORT=str(port), OPSMARU_DATABASE_USER='opsmaru_fixture', OPSMARU_DATABASE_PASSWORD='')
     try:
         subprocess.run(['mise','run','check'], cwd=root, env=env, check=True)
+        if options.precommit:
+            subprocess.run(['mise','exec','--','mix','precommit'], cwd=root, env=env, check=True)
     finally:
         run('pg_ctl', '-D', str(cluster/'data'), '-m', 'fast', '-w', 'stop')

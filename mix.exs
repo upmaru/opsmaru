@@ -72,7 +72,8 @@ defmodule Opsmaru.MixProject do
       {:mint, "1.11.0"},
       {:mint_web_socket, "1.0.5"},
       {:plug_cowboy, "2.9.0"},
-      {:cowboy, "2.19.0"}
+      {:cowboy, "2.19.0"},
+      {:credo, "1.7.19", only: [:dev, :test, :library], runtime: false}
     ]
   end
 
@@ -99,7 +100,13 @@ defmodule Opsmaru.MixProject do
         "esbuild opsmaru --minify",
         "phx.digest"
       ],
-      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
+      precommit: [
+        "compile --warnings-as-errors",
+        "deps.unlock --unused",
+        "format",
+        "credo --strict",
+        "test"
+      ]
     ]
 
     if Mix.env() == :library, do: Keyword.delete(aliases, :test), else: aliases
