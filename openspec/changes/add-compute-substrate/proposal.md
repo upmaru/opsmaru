@@ -35,6 +35,7 @@ None in the main inventory. Core embedded-service/incus-client requirements and 
 ## Impact
 
 - The foundational library/client can be completed and pinned by Macus before this central-service change.
+- [add-embeddable-incus-gateway](../add-embeddable-incus-gateway/proposal.md) separately owns optional reusable native proxy mechanics. It does not add a central multi-target native proxy or gate this change; Macus retains its endpoint, authentication/trust policy and private Swift/Incus bridge.
 - The Phoenix scaffold exists on the feature branch; shared compute, central registry, connector roles and authentication remain unimplemented. Keep the one completed bootstrap task as evidence, not central-service acceptance.
 - `add-remote-api-and-oauth` supplies central user verification, local target/project grants, browser administration and enrollment REST adapters. Implement the core target/storage/connector contracts here; wire the HTTP/auth surface there without duplicated registries or circular completion requirements.
 - Macus's `add-elixir-server` consumes the library and connector, adds `macus connect [url]`, connection status and disconnect, and preserves its local gateway, native proxy and Swift runtime. Macus does not become a multi-cluster manager.
