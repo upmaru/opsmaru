@@ -33,5 +33,7 @@ jobs:
       - run: GO111MODULE=off mise exec -- go test ./scripts ./scripts/incus-model-schema
       - name: Isolated immutable Git consumer
         env:
-          OPSMARU_FIXTURE_REVISION: ${{ github.sha }}
+          # PR github.sha is a synthetic merge commit, absent from normal Git fetches.
+          OPSMARU_FIXTURE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+          OPSMARU_FIXTURE_REPOSITORY: ${{ github.event.pull_request.head.repo.clone_url || format('{0}/{1}.git', github.server_url, github.repository) }}
         run: python3 scripts/check-consumer.py
