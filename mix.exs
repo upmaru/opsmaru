@@ -70,6 +70,7 @@ defmodule Opsmaru.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
+      {:yaml_elixir, "~> 2.12"},
       {:mint, "1.11.0"},
       {:mint_web_socket, "1.0.5"},
       {:plug_cowboy, "2.9.0"},
