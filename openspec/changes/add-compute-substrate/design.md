@@ -21,7 +21,7 @@ The reference client is Incus v7.0.1 at `13f3992766142d5087fff2e362cd2e1a75294fe
 
 **Non-Goals:**
 
-- Moving Swift/VZ, Macus's private relay, public endpoint/authentication/trust ownership or macOS installer into Opsmaru. Optional portable proxy mechanics are separately specified by [add-embeddable-incus-gateway](https://github.com/upmaru/opsmaru-incus/blob/feature/macus-standalone-planning/openspec/changes/add-embeddable-incus-gateway/design.md); consuming them does not transfer Macus host ownership or expose a central multi-target native proxy.
+- Moving Swift/VZ, Macus's private relay, public endpoint/authentication/trust ownership or macOS installer into Opsmaru. Optional portable proxy mechanics are separately specified by [add-embeddable-incus-gateway](https://github.com/upmaru/opsmaru-incus/blob/feature/incus-gateway-and-operations/openspec/changes/add-embeddable-incus-gateway/design.md); consuming them does not transfer Macus host ownership or expose a central multi-target native proxy.
 - Replacing Incus with another workload manager, adding workload placement/scheduling or a Tama reasoning engine, and imposing a full Opsmaru server beside each cluster.
 - Environment-image recipes, skill bundling, worktree creation, source synchronization, workspace provisioning, service previews or arbitrary host-shell tools in this foundation.
 - A second `opsmaru_server` Mix project or required second BEAM on macOS. The earlier two-package sketch is superseded by the requested single Phoenix application.
