@@ -2,7 +2,7 @@
 
 Opsmaru is a Phoenix application intended to provide portable Incus compute operations through an embedded Elixir API, MCP and REST. Macus embeds the same application; a central Linux deployment manages registered Incus clusters and Macus targets through one MCP/REST gateway.
 
-This branch contains a Phoenix 1.8 scaffold plus a passive embedded library and a portable Unix/mutual-TLS Incus client with typed native resource methods, binary transfers, operation handles, events and exec/console channels. See the [embedding example](docs/embedding.md) and [public API and incomplete coverage](docs/incus-client.md). Full client parity and real-backend acceptance remain incomplete. Central registration, outbound connectors, external OIDC, permissions and REST/MCP operations remain planning artifacts. The generated development page is not an authenticated compute console.
+This branch contains a Phoenix 1.8 scaffold with passive embedded startup. The portable Unix/mutual-TLS Incus client is the separate [`:opsmaru_incus`](https://github.com/upmaru/opsmaru-incus) library, used by both Opsmaru and Macus; its API, coverage and acceptance live in that repository. Central registration, outbound connectors, external OIDC, permissions and REST/MCP operations remain planning artifacts. The generated development page is not an authenticated compute console.
 
 ## Development
 
@@ -29,17 +29,9 @@ mise run spec:validate
 
 The checks require the configured dedicated test database. `scripts/check-embedded.exs` independently verifies the default embedding boundary with hostile server environment variables.
 
-```sh
-mise run check:library
-```
-
-The library profile bypasses Ecto setup and standalone test configuration. It
-uses disposable Unix/TLS protocol fixtures and the pinned official Incus Go
-client as a verifier only; no SQL, VM or live Incus backend is required.
-
-Strict Credo is included in `mix precommit`, `mise run check`, and
-`mise run check:library`. It is a development/test dependency and does not start
-with an embedded production consumer. Run the real precommit command safely
+Strict Credo is included in `mix precommit` and `mise run check`. It is a
+development/test dependency and does not start with an embedded production
+consumer. Run the real precommit command safely
 with `python3 scripts/check-isolated.py --precommit`; this also runs canonical
 checks in a fresh test-only PostgreSQL cluster and removes it afterward.
 
@@ -51,11 +43,11 @@ Central standalone mode is selected explicitly with `OPSMARU_MODE=standalone`. P
 
 ## Planning
 
-- [Embedded library and Incus client first](openspec/changes/add-embedded-incus-foundation/proposal.md): independent Macus embedding, Unix/HTTPS client, native API/streams and database-free consumer checks.
+- [Embedded library and Incus client first](https://github.com/upmaru/opsmaru-incus/blob/feature/incus-client/openspec/changes/add-embedded-incus-foundation/proposal.md): moved to `upmaru/opsmaru-incus` with the client on 2026-10-13; task 3.9 continues there.
 - [Later compute substrate](openspec/changes/add-compute-substrate/proposal.md): shared Incus client/tools, registered targets, direct HTTPS, outbound connectors and central/local durable execution.
 - [Remote API and OAuth](openspec/changes/add-remote-api-and-oauth/proposal.md): shared REST commands, configurable external OIDC/OAuth, central target grants, device enrollment, browser sessions and Keycloak acceptance.
 
-Implement add-embedded-incus-foundation first; it does not depend on central service, MCP/task adapters, OIDC or connectors. Implementation follows validated OpenSpec changes. A validated proposal is not completed runtime or security acceptance.
+Implement add-embedded-incus-foundation (in opsmaru-incus) first; it does not depend on central service, MCP/task adapters, OIDC or connectors. Implementation follows validated OpenSpec changes. A validated proposal is not completed runtime or security acceptance.
 
 ## Git Flow
 

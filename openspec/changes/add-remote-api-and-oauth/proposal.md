@@ -2,7 +2,7 @@
 
 ## Why
 
-After add-embedded-incus-foundation, Opsmaru's later compute-substrate layer needs a REST contract and remote authentication shared through one central gateway managing registered compute targets. A configurable external OIDC/OAuth authorization server lets operators use one identity system across clusters while Opsmaru enforces central target/project permissions. Keycloak is the first integration test provider; it is not a bundled runtime dependency.
+After add-embedded-incus-foundation (in `upmaru/opsmaru-incus`), Opsmaru's later compute-substrate layer needs a REST contract and remote authentication shared through one central gateway managing registered compute targets. A configurable external OIDC/OAuth authorization server lets operators use one identity system across clusters while Opsmaru enforces central target/project permissions. Keycloak is the first integration test provider; it is not a bundled runtime dependency.
 
 ## What Changes
 

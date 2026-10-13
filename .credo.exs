@@ -3,8 +3,7 @@
     %{
       name: "default",
       files: %{
-        included: ["lib/", "test/", "config/", "scripts/**/*.exs", "mix.exs"],
-        excluded: ["test/consumer/_build/", "test/consumer/deps/"]
+        included: ["lib/", "test/", "config/", "scripts/**/*.exs", "mix.exs"]
       },
       strict: true,
       checks: %{

@@ -24,7 +24,9 @@ context: |
   Central tasks use SQL transactions; embedded tasks/connector receipts use
   host-private local journals. Macus remains standalone and enables the connector
   only through macus connect [url] in its existing Elixir service.
-  First implement add-embedded-incus-foundation for independent library/client
+  The portable Incus client is the separate :opsmaru_incus library in
+  upmaru/opsmaru-incus (extracted 2026-10-13), used by Opsmaru and Macus.
+  First implement add-embedded-incus-foundation (now in that repository) for independent library/client
   adoption by Macus. Tools/tasks, registry/connectors and central APIs follow
   under add-compute-substrate and add-remote-api-and-oauth.
   Initial planning covers compute primitives, registration/connectivity and Linux delivery;

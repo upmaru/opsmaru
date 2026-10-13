@@ -6,7 +6,7 @@ Opsmaru must provide one central MCP/REST gateway for registered Incus clusters 
 
 ## What Changes
 
-- Depend first on [add-embedded-incus-foundation](../add-embedded-incus-foundation/proposal.md), which independently implements passive embedding and the portable Incus client. This later change adds tools/tasks/central registration/connectors on that verified library.
+- Depend first on [add-embedded-incus-foundation](https://github.com/upmaru/opsmaru-incus/blob/feature/incus-client/openspec/changes/add-embedded-incus-foundation/proposal.md), which independently implements the portable Incus client as the `:opsmaru_incus` library in `upmaru/opsmaru-incus`. This later change adds tools/tasks/central registration/connectors on that verified library.
 - Keep one Phoenix/Cowboy application `:opsmaru`, namespaces `Opsmaru`/`OpsmaruWeb`, reusable as an embedded dependency and delivered as a central Linux service.
 - Replace the earlier one-host-per-endpoint design with an authorized target registry. One central MCP endpoint manages multiple registered standalone Incus servers, clusters and Macus installations using stable target IDs, explicit project/member selection and per-target capabilities.
 - Connect reachable Incus targets directly through native HTTPS with verified server identity and a dedicated trusted client certificate/private key. No full Opsmaru install on the target is required.
@@ -30,7 +30,7 @@ Opsmaru must provide one central MCP/REST gateway for registered Incus clusters 
 
 ### Modified Capabilities
 
-None in the main inventory. Core embedded-service/incus-client requirements and implementation tasks now belong only to add-embedded-incus-foundation. This later change consumes those contracts; central and optional connector activation are specified under standalone-service/host-capabilities without duplicating the foundational client.
+None in the main inventory. Core embedded-service/incus-client requirements and implementation tasks now belong only to add-embedded-incus-foundation in `upmaru/opsmaru-incus`. This later change consumes those contracts; central and optional connector activation are specified under standalone-service/host-capabilities without duplicating the foundational client.
 
 ## Impact
 

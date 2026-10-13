@@ -14,9 +14,6 @@ Config.Reader.read!("config/runtime.exs", env: :prod, target: :host)
 
 ports = MapSet.new(Port.list())
 root = Path.join(System.tmp_dir!(), "opsmaru-passive-#{System.unique_integer([:positive])}")
-context = Opsmaru.Context.new!(owner: :fixture, identity: :verified, ready?: fn -> false end, private_state: root)
-connection = Opsmaru.Incus.Connection.unix!(Path.join(root, "incus.sock"), owner: :fixture)
-{:error, :host_not_ready} = Opsmaru.Context.authorize(context, connection)
 
 {:ok, _} = Application.ensure_all_started(:opsmaru)
 

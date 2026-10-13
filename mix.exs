@@ -7,7 +7,6 @@ defmodule Opsmaru.MixProject do
       version: "0.1.0",
       elixir: "~> 1.19.5",
       elixirc_paths: elixirc_paths(Mix.env()),
-      test_paths: if(Mix.env() == :library, do: ["test/library"], else: ["test/opsmaru_web"]),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
@@ -28,13 +27,12 @@ defmodule Opsmaru.MixProject do
 
   def cli do
     [
-      preferred_envs: [precommit: :test, "test.library": :library]
+      preferred_envs: [precommit: :test]
     ]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(:library), do: ["lib", "test/library/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
@@ -50,7 +48,7 @@ defmodule Opsmaru.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 1.2.0"},
-      {:lazy_html, ">= 0.1.0", only: [:test, :library]},
+      {:lazy_html, ">= 0.1.0", only: :test},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.5", runtime: Mix.env() == :dev},
       {:heroicons,
@@ -70,12 +68,13 @@ defmodule Opsmaru.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
-      {:yaml_elixir, "~> 2.12"},
-      {:mint, "1.11.0"},
-      {:mint_web_socket, "1.0.5"},
+      # Incus adapter shared with Macus: https://github.com/upmaru/opsmaru-incus
+      {:opsmaru_incus,
+       git: "https://github.com/upmaru/opsmaru-incus.git",
+       ref: "3a3ff1ea81ab96305963b800107b6f6a044604d3"},
       {:plug_cowboy, "2.9.0"},
       {:cowboy, "2.19.0"},
-      {:credo, "1.7.19", only: [:dev, :test, :library], runtime: false}
+      {:credo, "1.7.19", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -86,15 +85,11 @@ defmodule Opsmaru.MixProject do
   #
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
-    aliases = [
+    [
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "test.library": [
-        "compile --warnings-as-errors",
-        "test --no-start --no-compile test/library"
-      ],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["compile", "tailwind opsmaru", "esbuild opsmaru"],
       "assets.deploy": [
@@ -110,7 +105,5 @@ defmodule Opsmaru.MixProject do
         "test"
       ]
     ]
-
-    if Mix.env() == :library, do: Keyword.delete(aliases, :test), else: aliases
   end
 end

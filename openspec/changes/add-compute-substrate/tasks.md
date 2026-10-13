@@ -1,11 +1,11 @@
 # Tasks
 
-Later change, dependent on add-embedded-incus-foundation. Core embedding/client implementation tasks and specs are extracted there; do not implement a duplicate client here. The original checked scaffold task is retained as historical evidence only. Macus may pin the first foundation for local server/client progress before these tools/tasks/central/connector milestones. No new completion is claimed.
+Later change, dependent on add-embedded-incus-foundation (now in `upmaru/opsmaru-incus`). Core embedding/client implementation tasks and specs are extracted there; do not implement a duplicate client here. The original checked scaffold task is retained as historical evidence only. Macus may pin the first foundation for local server/client progress before these tools/tasks/central/connector milestones. No new completion is claimed.
 
 ## 1. Historical scaffold and foundation consumption
 
 - [x] 1.1 Scaffold one root Phoenix/Cowboy application `:opsmaru` with public `Opsmaru`/`OpsmaruWeb`, optional PostgreSQL/Ecto and HTML/LiveView assets; verify compilation, asset builds, generated baseline tests, absent mailer/dashboard and embedded startup without Endpoint/Repo.
-- [ ] 1.2 Build on the implemented add-embedded-incus-foundation connection/client API in the same root application and record its verified baseline revision; verify clean locked dependencies and no duplicate portable client or database requirement for local embedding.
+- [ ] 1.2 Build on the implemented add-embedded-incus-foundation connection/client API through the pinned `:opsmaru_incus` dependency and record its verified baseline revision; verify clean locked dependencies and no duplicate portable client or database requirement for local embedding.
 - [ ] 1.3 Document foundational versus later tool/task/central/connector ownership and dependency order; verify Macus library/client acceptance is independent of central feature completion.
 
 ## 2. Host and caller integration contracts

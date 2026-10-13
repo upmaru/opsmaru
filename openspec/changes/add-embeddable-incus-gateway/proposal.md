@@ -11,7 +11,7 @@ Macus needs a native Incus gateway mounted in its existing Elixir server without
 - Define an explicit host policy/configuration contract for verified callers, readiness, fixed backend connections, gateway identity/trust mediation, revocation and bounded resources. Macus retains its endpoint, policy, trust state, private sockets, Swift bridge, VM and packaging ownership.
 - Preserve canonical `/`, `/1.0` and `/1.0/*` routes, native bytes/queries/headers/errors/ETags and operation identities, with authorization before backend access across every protocol. Never replay potentially accepted mutations or substitute WebSocket framing for raw upgrades.
 - Add database-free protocol fixtures, an isolated immutable consumer and unmodified pinned Incus CLI/client conformance tests. Run direct typed-client and gateway tests against explicitly opted-in isolated real Incus in Opsmaru, recording each evidence class separately from installed Macus/hardware acceptance.
-- Keep typed-client completion in `add-embedded-incus-foundation`; gateway proxy success cannot close its missing task 3.9 coverage. Foundation task 4.3 can be verified directly in Opsmaru without Macus or this gateway, with any shared acceptance evidence explicitly cross-referenced.
+- Keep typed-client completion in `add-embedded-incus-foundation`; gateway proxy success cannot close its missing task 3.9 coverage. Foundation task 4.3 was verified directly without Macus or this gateway, and the foundation and task 3.9 now live in `upmaru/opsmaru-incus`, with any shared acceptance evidence explicitly cross-referenced.
 - Exclude central REST/MCP, OIDC/OAuth, registry/connectors, application task persistence, scheduling, provisioning, installers and modifications to Macus source.
 
 ## Capabilities

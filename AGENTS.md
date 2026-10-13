@@ -1,6 +1,6 @@
 # Project instructions
 
-Use the pinned mise Elixir/OTP and Node/OpenSpec tools. Opsmaru is one Phoenix application and reusable OTP dependency. Keep embedded mode the default: no Opsmaru endpoint, repository, issuer keys or standalone service may start merely because Macus loads the dependency. Standalone mode is explicit.
+Use the pinned mise Elixir/OTP and Node/OpenSpec tools. Opsmaru is one Phoenix application and reusable OTP dependency. The portable Incus client is the separate `:opsmaru_incus` library in upmaru/opsmaru-incus, used by Opsmaru and Macus; change it there and pin an immutable revision here, never a sibling path. Keep embedded mode the default: no Opsmaru endpoint, repository, issuer keys or standalone service may start merely because Macus loads the dependency. Standalone mode is explicit.
 
 Incus remains the canonical workload backend. Never implement its workload manager, invoke a host VM CLI or move Apple virtualization into shared code. Host applications supply verified identity and platform adapters. Preserve task ownership, native operation identity and backend data after failures.
 

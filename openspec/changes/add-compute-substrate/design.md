@@ -2,7 +2,7 @@
 
 ## Context
 
-See [proposal.md](proposal.md) for motivation. First complete [add-embedded-incus-foundation](../add-embedded-incus-foundation/design.md) for safe library embedding and the native client. This later change consumes it; MCP/local tasks, central registry/SQL and connectors are not gates on that first milestone. `git@github.com:upmaru/opsmaru.git` was empty when checked out; the initial proposal was a greenfield planning baseline. The subsequent explicit bootstrap request generated a root Phoenix/Cowboy project with PostgreSQL/Ecto and HTML/LiveView assets on feature/phoenix-bootstrap-and-remote-access. Baseline tests and embedded startup pass; shared compute functions remain unimplemented.
+See [proposal.md](proposal.md) for motivation. First complete [add-embedded-incus-foundation](https://github.com/upmaru/opsmaru-incus/blob/feature/incus-client/openspec/changes/add-embedded-incus-foundation/design.md), now in `upmaru/opsmaru-incus`, for the native client library. This later change consumes it; MCP/local tasks, central registry/SQL and connectors are not gates on that first milestone. `git@github.com:upmaru/opsmaru.git` was empty when checked out; the initial proposal was a greenfield planning baseline. The subsequent explicit bootstrap request generated a root Phoenix/Cowboy project with PostgreSQL/Ecto and HTML/LiveView assets on feature/phoenix-bootstrap-and-remote-access. Baseline tests and embedded startup pass; shared compute functions remain unimplemented.
 
 The integration reference is Macus's `add-elixir-server` change on `feature/elixir-server`. Its current implementation has a headless Phoenix scaffold, module boundary stubs, pinned Incus reference inventory/differential fixtures and a successful fixture-only Cowboy transport trial. Seven original tasks are checked; shared client methods, MCP tools, production gateway and durable tasks are pending. Macus uses Phoenix 1.8.15, Plug.Cowboy 2.9.0, Cowboy 2.19.0 and TamaMCP 0.1.1 in its current lockfile. These are a verified compatibility baseline for dependency resolution, not a mandate to publish those versions or claim new acceptance.
 
@@ -49,7 +49,7 @@ test/
 packaging/linux/
 ```
 
-The shared client is initially `Opsmaru.Incus`, isolated from Phoenix, MCP and host runtime code. A later standalone client package can be extracted without changing the consumer API, but this foundation does not introduce an additional repository.
+The shared client is `Opsmaru.Incus`, delivered as the separate pure `:opsmaru_incus` library (`upmaru/opsmaru-incus`) and pinned here as a Git dependency. It is isolated from Phoenix, MCP and host runtime code. It was extracted from this application on 2026-10-13 without changing its module names.
 
 Alternatives: two Mix projects add versioning and wiring before there is separate functionality; placing a complete duplicate service in Macus defeats the shared boundary. One application with an opt-in endpoint satisfies the requested deployment modes.
 
@@ -107,7 +107,7 @@ The common operation boundary handles central and standalone Macus authorization
 
 ### 5. Consume the independently delivered portable client
 
-The first add-embedded-incus-foundation change owns Opsmaru.Incus, host connection/context contracts, native API/stream port, pinned inventory/notices and database-free consumer checks. Consume its verified immutable revision/API rather than reimplementing those modules here. Macus can adopt this first library before shared tools, task adapters or central connectivity are implemented.
+The first add-embedded-incus-foundation change, in `upmaru/opsmaru-incus`, owns Opsmaru.Incus, host connection/context contracts, native API/stream port, pinned inventory/notices and database-free consumer checks. Consume its verified immutable revision/API rather than reimplementing those modules here. Macus can adopt this first library before shared tools, task adapters or central connectivity are implemented.
 
 This change adds registered-target transport adapters: direct HTTPS resolves the target's protected credential/trust references; connector dispatch executes through the same client at the configured remote host. Partition pools/caches/events and validate backend-returned addresses by target/generation. Preserve the foundation's operation/stream/uncertainty contract; no aggregate native Incus proxy or second client codec is introduced. Qualify direct/connector streaming separately from core client coverage.
 
@@ -147,7 +147,7 @@ Provide passive systemd packaging and separate explicit activation/enrollment in
 
 ### 9. Consumer pinning and implementation order
 
-1. Complete add-embedded-incus-foundation independently and publish a real implemented immutable library/client revision; no central/connector completion is required.
+1. Complete add-embedded-incus-foundation independently in `upmaru/opsmaru-incus` and publish a real implemented immutable library/client revision; no central/connector completion is required.
 2. Consume that client and implement shared MCP/tool/local-task contracts needed by Macus; preserve explicit incomplete-adapter advertisement and independent consumer evidence.
 3. Macus can pin the foundation first for local gateway/runtime/proxy/client integration, then update to a verified tool/task revision through its apply workflow. Development may use an editable sibling path; production and CI must resolve a pinned Git revision or released package without that sibling.
 4. Macus validates the composed catalogue, host identity/context, task recovery and native relay behavior. Its paired Swift/Mix build records one Macus revision and the distinct Opsmaru dependency revision; those are not required to be identical repositories' commits.
