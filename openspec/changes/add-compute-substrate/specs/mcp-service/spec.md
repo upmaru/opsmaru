@@ -8,7 +8,7 @@ Makes portable compute tools available through a shared MCP contract that standa
 
 ### Requirement: Maintained protocol integration
 
-MCP SHALL use the maintained protocol implementation's supported transport, schemas and task contracts. Unsupported resources, prompts, stdio or protocol versions MUST NOT be advertised. Authentication SHALL precede discovery and dispatch.
+MCP SHALL use the designated maintained MCP library's supported transport, schemas and task contracts; Opsmaru MUST NOT duplicate its protocol engine. Unsupported resources, prompts, stdio or protocol versions MUST NOT be advertised. Authentication SHALL precede discovery and dispatch.
 
 #### Scenario: Unsupported protocol
 
@@ -26,7 +26,7 @@ Shared Incus inspection, explicit mutations and bounded guest-execution tools SH
 
 ### Requirement: Host catalogue composition
 
-An embedding host SHALL be able to expose shared compute tools and host-specific tools through one catalogue and endpoint. Duplicate names SHALL fail catalogue construction. Platform-specific runtime tools SHALL be included only by a host that supplies them.
+An embedding host SHALL be able to expose shared compute tools and host-specific tools through one catalogue and endpoint. Duplicate names SHALL fail catalogue construction. Platform-specific runtime tools SHALL execute only on selected targets that supply compatible authorized adapters.
 
 #### Scenario: Macus combined catalogue
 
@@ -36,7 +36,7 @@ An embedding host SHALL be able to expose shared compute tools and host-specific
 #### Scenario: Standalone Linux catalogue
 
 - **WHEN** a Linux server builds its catalogue without a Macus runtime provider
-- **THEN** shared compute tools remain available and Macus runtime tools are absent
+- **THEN** shared compute tools remain available and Macus runtime execution is unavailable on Incus-only targets
 
 ### Requirement: Verified caller context
 
@@ -73,3 +73,17 @@ Shared tool schemas and protocol conformance SHALL be tested independently of ho
 
 - **WHEN** Macus integrates a new pinned shared-library revision
 - **THEN** its catalogue composition, shared schemas and authorization integration are verified in addition to the library's own conformance evidence
+
+### Requirement: Registered-target MCP selection
+
+Central discovery SHALL expose only permitted registered targets and their observed capabilities through one MCP endpoint. Targeted central execution SHALL require explicit target ID; local embedded calls SHALL default only to their configured local target. Tool schema compatibility SHALL be maintained across direct and connected execution.
+
+#### Scenario: Missing central mutation target
+
+- **WHEN** an agent requests a targeted mutation without a registered target ID
+- **THEN** validation fails before backend dispatch rather than using a global default target
+
+#### Scenario: Local target omitted
+
+- **WHEN** a standalone Macus caller omits target ID for a local compute operation
+- **THEN** its sole configured local backend is selected without contacting central Opsmaru

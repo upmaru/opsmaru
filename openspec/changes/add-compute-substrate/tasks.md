@@ -1,69 +1,64 @@
 # Tasks
 
-Planning only. All implementation, service activation, publication and real-backend work below requires a later apply request. Macus integration is tracked in its separate `add-elixir-server` change. Sections 1-6 establish the shared foundation; standalone Linux work can follow independently of Macus's runtime/proxy work.
+Later change, dependent on add-embedded-incus-foundation (now in `upmaru/opsmaru-incus`). Core embedding/client implementation tasks and specs are extracted there; do not implement a duplicate client here. The original checked scaffold task is retained as historical evidence only. Macus may pin the first foundation for local server/client progress before these tools/tasks/central/connector milestones. No new completion is claimed.
 
-## 1. Phoenix project and listener-free embedding
+## 1. Historical scaffold and foundation consumption
 
-- [ ] 1.1 Scaffold one root headless Phoenix/Cowboy application `:opsmaru` with public `Opsmaru`/`OpsmaruWeb` namespaces; verify compilation, generated baseline tests and absence of HTML/assets/LiveView/Ecto scaffolding.
-- [ ] 1.2 Pin Elixir/OTP, development tools and compatible Phoenix/Cowboy/TamaMCP dependencies; commit the lockfile and verify a clean dependency build against the Macus compatibility baseline without sibling path dependencies.
-- [ ] 1.3 Implement explicit embedded/standalone mode configuration and conditional endpoint supervision; verify default startup and PHX_SERVER/PORT cannot start an embedded endpoint process or listener, and invalid standalone configuration binds no port.
-- [ ] 1.4 Implement passive unconfigured startup, configured activation/state validation and host identity/provider readiness gating; verify loading creates no files, unsafe state fails, delayed host startup dispatches no backend work and supervision restarts preserve backend markers.
-- [ ] 1.5 Document library configuration, deployment modes and host startup ownership; verify a small external consumer starts embedded workers while retaining its own endpoint and stopping only the shared service tree.
+- [x] 1.1 Scaffold one root Phoenix/Cowboy application `:opsmaru` with public `Opsmaru`/`OpsmaruWeb`, optional PostgreSQL/Ecto and HTML/LiveView assets; verify compilation, asset builds, generated baseline tests, absent mailer/dashboard and embedded startup without Endpoint/Repo.
+- [ ] 1.2 Build on the implemented add-embedded-incus-foundation connection/client API through the pinned `:opsmaru_incus` dependency and record its verified baseline revision; verify clean locked dependencies and no duplicate portable client or database requirement for local embedding.
+- [ ] 1.3 Document foundational versus later tool/task/central/connector ownership and dependency order; verify Macus library/client acceptance is independent of central feature completion.
 
-## 2. Incus reference and portable client foundation
+## 2. Host and caller integration contracts
 
-- [ ] 2.1 Transfer the pinned official Incus v7.0.1 revision/inventory inputs and reusable Macus fixtures with source notices; verify hashes, inventory regeneration and added/removed/changed-entry detection while retaining consumer-specific Macus evidence.
-- [ ] 2.2 Generalize fake Unix/TLS backends and differential fixtures for both supported host platforms; verify query/body/status/error/ETag mismatches fail and provenance reports distinguish fixture evidence from live Incus.
-- [ ] 2.3 Implement typed codecs, native error envelopes and extension/version checks in the public client boundary; verify required/optional/null fields and unsupported-operation failure against pinned reference fixtures.
-- [ ] 2.4 Implement configured Unix/HTTPS discovery and raw requests with backend identity, deadlines and cleanup; verify local Macus-style relay and native Linux socket bindings use the same implementation, invalid TLS fails and caller addresses cannot replace the registered host.
-- [ ] 2.5 Document public connection configuration, coverage rules and upstream updates; verify missing evidence blocks a complete-port claim and the client boundary calls no Swift or Phoenix endpoint modules.
+- [ ] 2.1 Define registered target/transport/generation and trusted caller/local host-provider contracts; verify malicious owner/backend values cannot replace registered bindings and shared code starts no outer runtime.
+- [ ] 2.2 Implement passive capability reporting separating client support, live backend extensions/readiness and optional host features; verify missing Macus/nesting/KVM providers report unavailable rather than fabricated support.
+- [ ] 2.3 Implement authorized execution-host path resolution/prerequisite reporting; verify Linux-local versus client-local paths, read-only scope and Macus share-change prerequisites without mounting a workspace or restarting a host.
+- [ ] 2.4 Document stable host/caller contracts and Macus adapter responsibilities; verify an external consumer adapter can provide host features without importing Swift into Opsmaru or exposing arbitrary host execution.
 
-## 3. Portable client behavior slices
+## 3. Shared MCP catalogue and authorization
 
-- [ ] 3.1 Port project/member selection, profiles and access/certificate operations; verify native parameters, conditional requests, errors and inventory evidence against the pinned reference.
-- [ ] 3.2 Port instance create/read/update/state/delete and snapshot/restore operations; verify accepted handles, conflicts and destructive inputs retain native semantics in differential fixtures.
-- [ ] 3.3 Port images, aliases, imports, copies and exports; verify binary transfer framing, operation identity and the corresponding model/method evidence.
-- [ ] 3.4 Port network and cluster operations; verify configured target policy and all affected inventory entries without adding a multi-host scheduler.
-- [ ] 3.5 Port storage pools/volumes/snapshots/buckets; verify typed payloads and native errors without implementing storage behavior in the library.
-- [ ] 3.6 Port files/backups and native SFTP/NBD upgrade clients; verify official-client wire comparison, coalesced handshake bytes, binary duplex transfer, half-close and disconnect cleanup without counting Macus proxy fixtures as client completion.
-- [ ] 3.7 Port waiting/polling/supported cancellation and bounded event streams; verify native completion races, visible overflow, local timeout versus remote cancellation and no replay after ambiguous acceptance.
-- [ ] 3.8 Port exec/console and control streams; verify bounded input/output, terminal control, native exit status and cleanup against the pinned reference.
-- [ ] 3.9 Port migration/copy and every remaining supported inventory entry; verify address/operation negotiation, stream teardown and complete method/model evidence.
-- [ ] 3.10 Complete client API documentation and method/type manifest; rerun affected differential fixtures on macOS/Linux and verify no unsupported entry is hidden by raw proxy or platform-capability results.
+- [ ] 3.1 Integrate kritama/tama-mcp (`:tama_mcp`) and its maintained contracts, cache adapter and documented compile-time shared-tool inclusion; verify applicable conformance fixtures, deterministic catalogue ordering and duplicate-name compile failures.
+- [ ] 3.2 Register shared server/instance/image/project/profile/network/storage inspection and passive host-capability tools; verify schemas, configured backend binding and scope-aware discovery in standalone and composed consumer catalogues.
+- [ ] 3.3 Register explicit instance/state/image/snapshot mutations and bounded guest exec; verify native client delegation, required write/exec scopes and denial before backend access without a host-shell tool.
+- [ ] 3.4 Register explicit deletion/destructive restore inputs and destructive scopes; verify missing confirmation, forbidden tools and wrong scopes cannot dispatch backend or host-provider calls.
+- [ ] 3.5 Provide host authorization/context adapters and shared scope policy wiring; verify verified principal/owner/expiry survive dispatch and asynchronous handoff, revocation closes streams and request fields cannot forge identity.
+- [ ] 3.6 Publish the exact portable tool/schema/scope manifest and composition guide; verify a consumer adds a fixture runtime tool at one endpoint while Incus-only target execution excludes it and shared schemas stay identical.
 
-## 4. Host and caller integration contracts
+## 4. Shared durable execution
 
-- [ ] 4.1 Define the configured single-host descriptor, trusted request/owner context and host provider contract; verify malicious owner/backend values cannot replace registered bindings and shared code starts no outer runtime.
-- [ ] 4.2 Implement passive capability reporting separating client support, live backend extensions/readiness and optional host features; verify missing Macus/nesting/KVM providers report unavailable rather than fabricated support.
-- [ ] 4.3 Implement authorized execution-host path resolution/prerequisite reporting; verify Linux-local versus client-local paths, read-only scope and Macus share-change prerequisites without mounting a workspace or restarting a host.
-- [ ] 4.4 Document stable host/caller contracts and Macus adapter responsibilities; verify an external consumer adapter can provide host features without importing Swift into Opsmaru or exposing arbitrary host execution.
+- [ ] 4.1 Define shared store/runner contracts and implement versioned owner-private local task/receipt journal and serialized transitions; verify state isolation, journal replay, unsafe-path rejection, data-only descriptors and flush-before-handle behavior.
+- [ ] 4.2 Implement local atomic task/receipt-intent persistence plus supervised outbox execution; verify queued authorization, configured host/tool bindings and crash recovery without arbitrary module execution or bearer tokens in storage.
+- [ ] 4.3 Implement prompt native operation-ID persistence and reconciliation; verify a crash after possible acceptance but before durable identity records uncertainty without replaying the mutation.
+- [ ] 4.4 Implement durable input acceptance/cancellation, deadlines, output and concurrency bounds; verify duplicate updates do not resignal workers and local timeout/cancellation never asserts unsupported remote cancellation.
+- [ ] 4.5 Integrate bounded post-commit notifications, owner-bound polling and stream reauthorization; verify expiry/revocation/overflow/lost delivery and authoritative recovery through the maintained conformance contracts.
+- [ ] 4.6 Support registered consumer tool execution/recovery through the same runner; verify a fixture host-runtime tool retains owner/tool identity and missing or incompatible descriptors fail explicitly after restart.
+- [ ] 4.7 Document task schema versions, recovery, acceptance/completion semantics and advertisement gating; verify a deployment with incomplete adapters never advertises durable tasks and rollback cannot truncate an incompatible journal.
 
-## 5. Shared MCP catalogue and authorization
+## 5. Registered targets and central SQL coordination
 
-- [ ] 5.1 Integrate the maintained TamaMCP dependency, cache adapter and documented compile-time shared-tool inclusion; verify applicable conformance fixtures, deterministic catalogue ordering and duplicate-name compile failures.
-- [ ] 5.2 Register shared server/instance/image/project/profile/network/storage inspection and passive host-capability tools; verify schemas, configured backend binding and scope-aware discovery in standalone and composed consumer catalogues.
-- [ ] 5.3 Register explicit instance/state/image/snapshot mutations and bounded guest exec; verify native client delegation, required write/exec scopes and denial before backend access without a host-shell tool.
-- [ ] 5.4 Register explicit deletion/destructive restore inputs and destructive scopes; verify missing confirmation, forbidden tools and wrong scopes cannot dispatch backend or host-provider calls.
-- [ ] 5.5 Provide host authorization/context adapters and shared scope policy wiring; verify verified principal/owner/expiry survive dispatch and asynchronous handoff, revocation closes streams and request fields cannot forge identity.
-- [ ] 5.6 Publish the exact portable tool/schema/scope manifest and composition guide; verify a consumer adds a fixture runtime tool at one endpoint while the default Linux catalogue excludes it and shared schemas stay identical.
+- [ ] 5.1 Implement registry schema/contracts for target kind, transport, generation, credential references, ownership/grants, capability/version and readiness; verify duplicate/replacement identities do not rebind tasks and document target versus cluster-member selection.
+- [ ] 5.2 Implement trusted direct HTTPS target adapter with dedicated certificate/private-key references and server/address policy; verify wrong trust, cross-target pool/credential reuse, redirects/backend-returned endpoints and unauthorized project/member selections cannot contact another backend.
+- [ ] 5.3 Implement PostgreSQL task/idempotency/outbox transactions and dispatch leases through the common store/runner contract; verify racing acceptance/restart yields one committed intent and no split transaction with a second central journal.
+- [ ] 5.4 Integrate per-target/global concurrency, owner/target/generation recovery and post-commit events; verify offline/replaced targets preserve outcomes, other targets remain responsive and missing native acceptance evidence records uncertainty.
+- [ ] 5.5 Document central storage/backup/rollback and registered target lifecycle; verify isolated migration/restore preserves historical targets/tasks and an incompatible rollback fails without resetting state.
 
-## 6. Shared durable execution
+## 6. Outbound connector protocol and local receipts
 
-- [ ] 6.1 Implement versioned owner-private append-only task storage and serialized transitions; verify state isolation, journal replay, unsafe-path rejection, data-only descriptors and flush-before-handle behavior.
-- [ ] 6.2 Implement atomic task/intent persistence plus supervised outbox execution; verify queued authorization, configured host/tool bindings and crash recovery without arbitrary module execution or bearer tokens in storage.
-- [ ] 6.3 Implement prompt native operation-ID persistence and reconciliation; verify a crash after possible acceptance but before durable identity records uncertainty without replaying the mutation.
-- [ ] 6.4 Implement durable input acceptance/cancellation, deadlines, output and concurrency bounds; verify duplicate updates do not resignal workers and local timeout/cancellation never asserts unsupported remote cancellation.
-- [ ] 6.5 Integrate bounded post-commit notifications, owner-bound polling and stream reauthorization; verify expiry/revocation/overflow/lost delivery and authoritative recovery through the maintained conformance contracts.
-- [ ] 6.6 Support registered consumer tool execution/recovery through the same runner; verify a fixture host-runtime tool retains owner/tool identity and missing or incompatible descriptors fail explicitly after restart.
-- [ ] 6.7 Document task schema versions, recovery, acceptance/completion semantics and advertisement gating; verify a deployment with incomplete adapters never advertises durable tasks and rollback cannot truncate an incompatible journal.
+- [ ] 6.1 Implement one-use key-bound device enrollment contracts and registered public-certificate trust; verify replay/expiry/wrong key/owner/generation denial and no user OAuth token issuer or stored device private key on central.
+- [ ] 6.2 Implement versioned outbound TLS/WebSocket handshake, session epochs, heartbeat/backoff and device revocation; verify stale/revoked sessions cannot dispatch, NAT fixtures need no inbound port and disabled embedded mode creates no connection.
+- [ ] 6.3 Implement registered operation envelopes and local permission/schema/deadline enforcement; verify forged owners/targets/projects, arbitrary commands/destinations and incompatible tool versions fail before backend/runtime access.
+- [ ] 6.4 Commit dispatch receipts/input digests in the existing local journal before acknowledgement; verify duplicate/conflicting dispatch, lost acknowledgement, connector restart and uncertain native acceptance cannot repeat a mutation or create a second runner.
+- [ ] 6.5 Implement bounded correlated control/data streams with receipt/status reconciliation; verify binary transfer, exec control, half-close, saturation/disconnect and 30-second maximum central device revocation bound with per-capability support evidence.
+- [ ] 6.6 Package/document the connector-only bundled-ERTS Linux role under passive systemd delivery; verify no Elixir/Erlang/Repo/issuer credentials/inbound listener are required and private receipt/device markers survive upgrades.
+- [ ] 6.7 Run isolated multi-target direct/connector integration with overlapping names, generations and allowed scopes; verify one endpoint routes correctly, outages isolate targets and fixture results remain distinct from actual installed/Linux/Macus acceptance.
 
-## 7. Standalone Linux HTTP and administration
+## 7. Central service and connector-only startup
 
-- [ ] 7.1 Configure the standalone-only Phoenix endpoint for loopback HTTPS and explicit remote identity; verify embedded configuration cannot enable it, invalid TLS binds no listener and native backend access follows authentication.
-- [ ] 7.2 Mount the shared catalogue at /mcp with standalone bearer verification and shared task/cache adapters; verify real HTTP conformance, read/write/exec/delete scope separation and caller-owned task access against fake Unix/TLS backends.
-- [ ] 7.3 Implement owner-local identity initialization and private bearer issuance/revocation; verify unsafe ownership/destinations fail, ordinary inspection creates no credentials and secrets are absent from logs/status/packages.
-- [ ] 7.4 Provide authenticated service/capability status that distinguishes backend unavailability; verify status remains available while Incus is stopped and no startup action installs Incus or creates an outer VM.
-- [ ] 7.5 Document local/remote setup, service-account Incus permissions and credential rotation; verify isolated configured examples without automatic privilege grants, network/firewall changes or an additional Incus proxy.
+- [ ] 7.1 Configure explicit central/embedded/connector-only roles with private state and role-specific preflight; verify empty central registry needs no local Incus, connector-only starts no Endpoint/Repo/listener and ambient web variables cannot change roles.
+- [ ] 7.2 Mount one central MCP catalogue with registry/target dispatch and common store adapters; verify explicit target selection, target-filtered discovery and equivalent schemas on direct/connector/local paths.
+- [ ] 7.3 Integrate external user verification and target-grant/enrollment HTTP adapters from add-remote-api-and-oauth; verify user/device/backend identities remain distinct and local embedding requires no central OIDC or SQL.
+- [ ] 7.4 Expose sanitized central/target/connector/backend readiness; verify one failed target leaves others usable and ordinary inspection starts no sessions, credentials or workloads.
+- [ ] 7.5 Document central direct-HTTPS setup and optional Linux connector service/backend permissions; verify examples require explicit enrollment/activation and create no inbound firewall changes, outer VM or full server on every target.
 
 ## 8. Linux release and passive installation
 
@@ -80,3 +75,4 @@ Planning only. All implementation, service activation, publication and real-back
 - [ ] 9.3 With explicit live Linux opt-in, use isolated project/state/credentials to prove shared inspection/mutation/exec/native file channels and durable task recovery against actual Incus; preserve backend data and failure diagnostics.
 - [ ] 9.4 With explicit installed Linux opt-in, prove passive install followed by standalone activation, restart and upgrade/rollback with retained workload/task markers; record package, service and backend evidence separately.
 - [ ] 9.5 With explicit remote-client opt-in, prove advertised TLS identity, scopes and revocation from another client; keep unavailable remote/live gates unchecked and link Macus-owned hardware acceptance without claiming it here.
+- [ ] 9.6 With explicit installed/remote Linux opt-in, prove a central service managing separate direct-HTTPS and outbound-connector Incus targets using isolated projects/credentials/state; verify native certificate trust, no inbound connector port, cross-target isolation, stream limits and disconnect/receipt recovery without replay, preserving data and leaving unavailable gates incomplete.
