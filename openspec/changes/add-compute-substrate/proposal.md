@@ -1,5 +1,7 @@
 # Proposal
 
+> **Revision note (2026-10-13), to resolve before implementing this change:** `:opsmaru` is now a standalone central service with its own business logic; Macus no longer embeds it. The Incus client, the native gateway mechanics and the shared Incus operation/MCP tool definitions live in the pure `:opsmaru_incus` library ([upmaru/opsmaru-incus](https://github.com/upmaru/opsmaru-incus): `add-embedded-incus-foundation`, `add-embeddable-incus-gateway`, `add-incus-operations`), which central Opsmaru consumes like Macus does. The first milestone is a standalone Macus; registering a Mac with central is Macus's later `add-central-registration`, where a reachable Mac can be a direct-HTTPS Incus target through its gateway and the outbound connector serves Macs behind NAT. Sections below that describe Macus embedding `:opsmaru`, an embedded deployment role, or `Opsmaru.MCP.Tools.*` defined here are superseded by this note.
+
 ## Why
 
 Opsmaru must provide one central MCP/REST gateway for registered Incus clusters and Macus installations while sharing its compute implementation with independently usable Macus. Direct Incus HTTPS and authenticated outbound connectors allow the same operations across reachable and private targets without requiring a full Opsmaru server beside each cluster.
@@ -35,7 +37,7 @@ None in the main inventory. Core embedded-service/incus-client requirements and 
 ## Impact
 
 - The foundational library/client can be completed and pinned by Macus before this central-service change.
-- [add-embeddable-incus-gateway](../add-embeddable-incus-gateway/proposal.md) separately owns optional reusable native proxy mechanics. It does not add a central multi-target native proxy or gate this change; Macus retains its endpoint, authentication/trust policy and private Swift/Incus bridge.
+- [add-embeddable-incus-gateway](https://github.com/upmaru/opsmaru-incus/blob/feature/macus-standalone-planning/openspec/changes/add-embeddable-incus-gateway/proposal.md) separately owns optional reusable native proxy mechanics. It does not add a central multi-target native proxy or gate this change; Macus retains its endpoint, authentication/trust policy and private Swift/Incus bridge.
 - The Phoenix scaffold exists on the feature branch; shared compute, central registry, connector roles and authentication remain unimplemented. Keep the one completed bootstrap task as evidence, not central-service acceptance.
 - `add-remote-api-and-oauth` supplies central user verification, local target/project grants, browser administration and enrollment REST adapters. Implement the core target/storage/connector contracts here; wire the HTTP/auth surface there without duplicated registries or circular completion requirements.
 - Macus's `add-elixir-server` consumes the library and connector, adds `macus connect [url]`, connection status and disconnect, and preserves its local gateway, native proxy and Swift runtime. Macus does not become a multi-cluster manager.

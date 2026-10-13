@@ -26,6 +26,11 @@ context: |
   only through macus connect [url] in its existing Elixir service.
   The portable Incus client is the separate :opsmaru_incus library in
   upmaru/opsmaru-incus (extracted 2026-10-13), used by Opsmaru and Macus.
+  Revision 2026-10-13: :opsmaru is a standalone central service with its
+  own business logic; Macus no longer embeds it. The native gateway and the
+  shared Incus MCP tool definitions also live in opsmaru-incus. The first
+  milestone is a standalone Macus; central registration comes later. Text
+  below about Macus embedding :opsmaru is superseded.
   First implement add-embedded-incus-foundation (now in that repository) for independent library/client
   adoption by Macus. Tools/tasks, registry/connectors and central APIs follow
   under add-compute-substrate and add-remote-api-and-oauth.

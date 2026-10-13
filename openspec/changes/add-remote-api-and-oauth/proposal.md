@@ -1,5 +1,7 @@
 # Proposal
 
+> **Revision note (2026-10-13), to resolve before implementing this change:** `:opsmaru` is now a standalone central service with its own business logic; Macus no longer embeds it. The Incus client, the native gateway mechanics and the shared Incus operation/MCP tool definitions live in the pure `:opsmaru_incus` library ([upmaru/opsmaru-incus](https://github.com/upmaru/opsmaru-incus): `add-embedded-incus-foundation`, `add-embeddable-incus-gateway`, `add-incus-operations`), which central Opsmaru consumes like Macus does. The first milestone is a standalone Macus; registering a Mac with central is Macus's later `add-central-registration`, where a reachable Mac can be a direct-HTTPS Incus target through its gateway and the outbound connector serves Macs behind NAT. Sections below that describe Macus embedding `:opsmaru`, an embedded deployment role, or `Opsmaru.MCP.Tools.*` defined here are superseded by this note.
+
 ## Why
 
 After add-embedded-incus-foundation (in `upmaru/opsmaru-incus`), Opsmaru's later compute-substrate layer needs a REST contract and remote authentication shared through one central gateway managing registered compute targets. A configurable external OIDC/OAuth authorization server lets operators use one identity system across clusters while Opsmaru enforces central target/project permissions. Keycloak is the first integration test provider; it is not a bundled runtime dependency.

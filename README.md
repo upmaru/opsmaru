@@ -44,6 +44,7 @@ Central standalone mode is selected explicitly with `OPSMARU_MODE=standalone`. P
 ## Planning
 
 - [Embedded library and Incus client first](https://github.com/upmaru/opsmaru-incus/blob/feature/incus-client/openspec/changes/add-embedded-incus-foundation/proposal.md): moved to `upmaru/opsmaru-incus` with the client on 2026-10-13; task 3.9 continues there.
+- Native gateway and shared Incus MCP tools: moved to `upmaru/opsmaru-incus` (`add-embeddable-incus-gateway`, `add-incus-operations`).
 - [Later compute substrate](openspec/changes/add-compute-substrate/proposal.md): shared Incus client/tools, registered targets, direct HTTPS, outbound connectors and central/local durable execution.
 - [Remote API and OAuth](openspec/changes/add-remote-api-and-oauth/proposal.md): shared REST commands, configurable external OIDC/OAuth, central target grants, device enrollment, browser sessions and Keycloak acceptance.
 

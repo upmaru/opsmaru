@@ -1,5 +1,7 @@
 # Design
 
+> **Revision note (2026-10-13), to resolve before implementing this change:** `:opsmaru` is now a standalone central service with its own business logic; Macus no longer embeds it. The Incus client, the native gateway mechanics and the shared Incus operation/MCP tool definitions live in the pure `:opsmaru_incus` library ([upmaru/opsmaru-incus](https://github.com/upmaru/opsmaru-incus): `add-embedded-incus-foundation`, `add-embeddable-incus-gateway`, `add-incus-operations`), which central Opsmaru consumes like Macus does. The first milestone is a standalone Macus; registering a Mac with central is Macus's later `add-central-registration`, where a reachable Mac can be a direct-HTTPS Incus target through its gateway and the outbound connector serves Macs behind NAT. Sections below that describe Macus embedding `:opsmaru`, an embedded deployment role, or `Opsmaru.MCP.Tools.*` defined here are superseded by this note.
+
 ## Context
 
 See [proposal.md](proposal.md) for motivation. First complete [add-embedded-incus-foundation](https://github.com/upmaru/opsmaru-incus/blob/feature/incus-client/openspec/changes/add-embedded-incus-foundation/design.md), now in `upmaru/opsmaru-incus`, for the native client library. This later change consumes it; MCP/local tasks, central registry/SQL and connectors are not gates on that first milestone. `git@github.com:upmaru/opsmaru.git` was empty when checked out; the initial proposal was a greenfield planning baseline. The subsequent explicit bootstrap request generated a root Phoenix/Cowboy project with PostgreSQL/Ecto and HTML/LiveView assets on feature/phoenix-bootstrap-and-remote-access. Baseline tests and embedded startup pass; shared compute functions remain unimplemented.
@@ -19,7 +21,7 @@ The reference client is Incus v7.0.1 at `13f3992766142d5087fff2e362cd2e1a75294fe
 
 **Non-Goals:**
 
-- Moving Swift/VZ, Macus's private relay, public endpoint/authentication/trust ownership or macOS installer into Opsmaru. Optional portable proxy mechanics are separately specified by [add-embeddable-incus-gateway](../add-embeddable-incus-gateway/design.md); consuming them does not transfer Macus host ownership or expose a central multi-target native proxy.
+- Moving Swift/VZ, Macus's private relay, public endpoint/authentication/trust ownership or macOS installer into Opsmaru. Optional portable proxy mechanics are separately specified by [add-embeddable-incus-gateway](https://github.com/upmaru/opsmaru-incus/blob/feature/macus-standalone-planning/openspec/changes/add-embeddable-incus-gateway/design.md); consuming them does not transfer Macus host ownership or expose a central multi-target native proxy.
 - Replacing Incus with another workload manager, adding workload placement/scheduling or a Tama reasoning engine, and imposing a full Opsmaru server beside each cluster.
 - Environment-image recipes, skill bundling, worktree creation, source synchronization, workspace provisioning, service previews or arbitrary host-shell tools in this foundation.
 - A second `opsmaru_server` Mix project or required second BEAM on macOS. The earlier two-package sketch is superseded by the requested single Phoenix application.
